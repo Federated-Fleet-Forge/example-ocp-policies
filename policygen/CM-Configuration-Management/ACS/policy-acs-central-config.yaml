@@ -1,0 +1,59 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: acs-configuration
+  namespace: stackrox
+  labels:
+    app: acs-central
+data:
+  identity-providers.yaml: |
+    name: OpenShift
+    minimumRole: None
+    uiEndpoint: central
+    groups:
+        - key: groups
+          value: sg-example-group
+          role: Admin
+        - key: groups
+          value: sg-example-group
+          role: Analyst
+        - key: groups
+          value: sg-example-group
+          role: Analyst
+    openshift:
+        enable: true
+  permission-sets.yaml: |
+    name: application-owners
+    description: A sample permission set created declaratively
+    resources:
+      - resource: Deployment
+        access: READ_ACCESS
+      - resource: DeploymentExtension
+        access: READ_ACCESS
+      - resource: Image
+        access: READ_ACCESS
+      - resource: Namespace
+        access: READ_ACCESS
+      - resource: NetworkGraph
+        access: READ_ACCESS
+      - resource: NetworkPolicy
+        access: READ_ACCESS
+      - resource: VulnerabilityManagementRequests
+        access: READ_WRITE_ACCESS
+      - resource: WatchedImage
+        access: READ_ACCESS
+      - resource: WorkflowAdministration
+        access: READ_ACCESS
+  roles.yaml: |
+    name: nokia-application-owners
+    accessScope: nokia
+    permissionSet: application-owners
+    ---
+    name: nokia
+    rules:
+      namespaceLabelSelectors:
+        - requirements:
+            - key: app
+              operator: IN
+              values:
+                - nokia

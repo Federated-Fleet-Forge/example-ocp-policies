@@ -1,0 +1,33 @@
+apiVersion: config.openshift.io/v1
+kind: OAuth
+metadata:
+  name: cluster
+spec:
+  identityProviders:
+  - name: "AD (example)"
+    mappingMethod: claim
+    type: LDAP
+    ldap:
+      attributes:
+        id:
+        - sAMAccountName
+        email:
+        - mail
+        name:
+        - cn
+        preferredUsername:
+        - sAMAccountName
+      bindDN: "CN=svc-ldap-bind,OU=ServiceAccounts,DC=example,DC=com"
+      bindPassword:
+        name: ldap-secret
+      ca:
+        name: ldap-ca-cert
+      insecure: false
+      #url: "ldaps://ldap.example.com/DC=example,DC=nz?sAMAccountName?sub?(memberOf:1.2.840.113556.1.4.1941:=CN=sg-example-access-group,OU=Groups,DC=example,DC=nz)"
+      url: 'ldaps://ldap.example.com/DC=example,DC=nz?sAMAccountName?sub?(memberOf:1.2.840.113556.1.4.1941:=CN=sg-example-access-group{{ fromClusterClaim "name" }},OU=Groups,DC=example,DC=nz)'
+  - name: "cluster-admin"
+    mappingMethod: claim
+    type: HTPasswd
+    htpasswd:
+      fileData:
+        name: htpass-secret

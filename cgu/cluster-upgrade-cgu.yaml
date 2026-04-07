@@ -1,0 +1,22 @@
+apiVersion: ran.openshift.io/v1alpha1
+kind: ClusterGroupUpgrade
+metadata:
+  name: cluster-upgrade-4-18-to-4-19
+  namespace: ztp-cwl
+spec:
+  clusters:
+    - example-cluster-1
+  enable: false          # Set to true when ready to roll out
+  managedPolicies:
+    - policy-cluster-upgrade-4-19
+  remediationStrategy:
+    maxConcurrency: 1    # Roll out one cluster at a time
+    timeout: 480         # Minutes - cluster upgrades take longer than operator upgrades
+  batchTimeoutAction: Abort
+  actions:
+    beforeEnable:
+      deleteObjects:
+        - apiVersion: ran.openshift.io/v1alpha1
+          kind: ClusterGroupUpgrade
+          name: operator-upgrade-virt-group
+          namespace: ztp-cwl

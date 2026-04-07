@@ -1,0 +1,36 @@
+# This policy will be replaced by AdminNetworkPolicy once
+# the CNFs support OpenShift 4.16
+# The PolicyGenerators deploying this manifest by deploy
+# to workload clusters only.
+# This policy adds a label to non-cluster namespaces
+# for use with NetworkPolicies.
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: ConfigurationPolicy
+metadata:
+  name: set-non-cluster-ns-netpol-label
+spec:
+  remediationAction: enforce
+  severity: medium
+  evaluationInterval:  # reducing the evaluation interval
+    compliant: 30m
+    noncompliant: 5m
+  object-templates-raw: >
+    {{- range $namespace := (lookup "v1" "Namespace" "" "").items }}
+      {{- $counter := 0 }}
+      {{- range $excluded := split " " ((lookup "v1" "ConfigMap" "openshift-config" "example-cluster-ns-list").data.namespaces | replace "\n" " " | trim ) }}
+        {{- if contains $excluded $namespace.metadata.name }}
+          {{- $counter = add $counter 1 }}
+        {{- end }}
+      {{- end }}
+      {{- if eq $counter 0 }}
+    - complianceType: musthave
+      objectDefinition:
+        apiVersion: v1
+        kind: Namespace
+        metadata:
+          name: {{ $namespace.metadata.name }}
+          labels:
+            example-app-namespace: ''
+      {{- end }}
+    {{- end }}

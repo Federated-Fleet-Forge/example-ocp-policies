@@ -1,0 +1,40 @@
+# Only for clusters where a separate Storage
+# network is used
+apiVersion: ocs.openshift.io/v1
+kind: StorageCluster
+metadata:
+  annotations:
+    cluster.ocs.openshift.io/local-devices: "true"
+    uninstall.ocs.openshift.io/cleanup-policy: delete
+    uninstall.ocs.openshift.io/mode: graceful
+  name: ocs-storagecluster
+  namespace: openshift-storage
+spec:
+  network:
+    provider: multus
+    selectors:
+      cluster: openshift-storage/ocs-cluster
+  flexibleScaling: true
+  monDataDirHostPath: /var/lib/rook
+  placement:
+    all:
+      tolerations:
+      - effect: NoSchedule
+        key: node.ocs.openshift.io/storage
+        operator: Equal
+        value: 'true'
+      - effect: NoSchedule
+        key: node-role.kubernetes.io/master
+  storageDeviceSets:
+  - count: '{{ fromConfigMap "openshift-config" "cluster-info" "odf_target_disk_count" | toInt }}'    # Define in cluster-info configMap. Must be set to the total # of ODF disks for the cluster
+    dataPVCTemplate:
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: "1"
+        storageClassName: localvolumeset
+        volumeMode: Block
+    name: ocs-deviceset-localvolumeset
+    replica: 1

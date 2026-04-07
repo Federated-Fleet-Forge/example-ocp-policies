@@ -1,0 +1,9 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: create-cluster-init-bundle
+  namespace: stackrox
+status:
+  conditions:
+    - type: Complete
+      status: "True"

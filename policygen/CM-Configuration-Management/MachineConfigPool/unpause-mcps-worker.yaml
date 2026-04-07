@@ -1,0 +1,8 @@
+# Avoid reboots by only unpausing after all changes made
+---
+apiVersion: machineconfiguration.openshift.io/v1
+kind: MachineConfigPool
+metadata:
+  name: worker
+spec:
+  paused: false

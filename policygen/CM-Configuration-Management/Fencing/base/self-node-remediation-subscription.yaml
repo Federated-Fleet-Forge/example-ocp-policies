@@ -1,0 +1,27 @@
+---
+# Self Node Remediation (SNR) operator - provides in-band node fencing that does
+# not require BMC access. Used as a fallback when fence_redfish cannot reach the
+# BMC (e.g. complete power failure where BMC shares the same power domain).
+#
+# If BMC has dedicated/separate power (its own UPS or independent power circuit),
+# the fence_redfish agent will succeed even during node power loss and SNR
+# escalation is unnecessary. In that case you may remove this subscription and
+# the SelfNodeRemediationTemplate, and revert the NodeHealthCheck resources to
+# use a single remediationTemplate instead of escalatingRemediations.
+#
+# Uses the same namespace and OperatorGroup as fence-agents-remediation:
+#   base/fencing-operator-ns.yaml          -> openshift-workload-availability
+#   base/fencing-operator-operatorGroup.yaml -> workload-availability-operator-group
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: self-node-remediation-subscription
+  namespace: openshift-workload-availability
+spec:
+  channel: stable
+  installPlanApproval: Automatic
+  name: self-node-remediation
+  source: redhat-operators
+  sourceNamespace: openshift-marketplace
+status:
+  state: AtLatestKnown

@@ -1,0 +1,14 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: policies
+resources:
+  - cluster-hub.yaml
+  - cluster-hub-oneshot.yaml
+  - all-managed-clusters.yaml
+  - group-virt.yaml
+  - group-virt-oneshot.yaml
+  - group-sno.yaml
+  - site-site1.yaml
+
+commonAnnotations:
+  argocd.argoproj.io/compare-options: IgnoreExtraneous

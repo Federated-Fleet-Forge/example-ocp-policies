@@ -1,0 +1,23 @@
+apiVersion: compliance.openshift.io/v1alpha1
+kind: TailoredProfile
+metadata:
+  name: ocp4-cis-platform-tailored-hub
+  namespace: openshift-compliance
+  annotations:
+    compliance.openshift.io/product-type: Platform
+spec:
+  extends: ocp4-cis
+  description: TailoredProfile that tunes Platform scans
+  title: CIS Platform profile
+  setValues:
+  - name: ocp4-var-network-policies-namespaces-exempt-regex
+    rationale: Exempting cluster namespaces. This lists should match the namespaceSelector applied to the NetworkPolicy policy
+    value: "^aap$|ansible-automation-platform|assisted-installer|default-broker|hive|hypershift|local-cluster|multicluster-engine|open-cluster-management|^policies$|quay|rhacm|rhacs|stackrox|ztp|^clus-"
+  - name: ocp4-var-sccs-with-allowed-capabilities-regex
+    rationale: Exempting SCCs required by the platform (default SCCs have to be included for this var)
+    value: "^hostnetwork-v2$|^nonroot-v2$|^privileged$|^restricted-v2$|noobaa-endpoint|rook-ceph|rook-ceph-csi"
+  disableRules:
+    - name: ocp4-audit-profile-set
+      rationale: Accepted by Example Org security team
+    - name: ocp4-kubelet-configure-tls-cipher-suites-ingresscontroller
+      rationale: Default ciphers are aligned with Example Org security requirements

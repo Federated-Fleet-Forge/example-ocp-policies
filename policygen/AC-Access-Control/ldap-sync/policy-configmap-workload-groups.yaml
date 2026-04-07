@@ -1,0 +1,46 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: ldap-group-syncer
+  namespace: ldap-sync
+data:
+  sync.yml: |-
+    kind: LDAPSyncConfig
+    apiVersion: v1
+    url: ldaps://ldap.example.com:636
+    insecure: false
+    bindDN: CN=svc-ldap-bind,OU=ServiceAccounts,DC=example,DC=com
+    bindPassword:
+      file: "/etc/secrets/bindPassword"
+    ca: /etc/ldap-ca/ca.crt
+    groupUIDNameMapping:
+      CN=SG-Platform-Admins,OU=Groups,DC=example,DC=com: sg-platform-admins
+      CN=SG-Cluster-Admins,OU=Groups,DC=example,DC=com: sg-cluster-admins
+      CN=SG-Cluster-Editors,OU=Groups,DC=example,DC=com: sg-cluster-editors
+      CN=SG-Cluster-Viewers,OU=Groups,DC=example,DC=com: sg-cluster-viewers
+      CN=SG-Security-Team,OU=Groups,DC=example,DC=com: sg-security-team
+      CN=SG-Virt-Admins,OU=Groups,DC=example,DC=com: sg-virt-admins
+
+    activeDirectory:
+      usersQuery:
+        baseDN: DC=example,DC=com
+        scope: sub
+        derefAliases: never
+        filter: (objectclass=person)
+        pageSize: 999
+      userNameAttributes: [ sAMAccountName ]
+      groupMembershipAttributes: [ memberOf ]
+  whitelist.txt: |-
+    CN=SG-Platform-Admins,OU=Groups,DC=example,DC=com
+    CN=SG-Cluster-Admins,OU=Groups,DC=example,DC=com
+    CN=SG-Cluster-Editors,OU=Groups,DC=example,DC=com
+    CN=SG-Cluster-Viewers,OU=Groups,DC=example,DC=com
+    CN=SG-Security-Team,OU=Groups,DC=example,DC=com
+    CN=SG-Virt-Admins,OU=Groups,DC=example,DC=com
+# Group Comments:
+# SG-Platform-Admins -> Platform/Infrastructure team, cluster-admin
+# SG-Cluster-Admins -> Cluster administrators
+# SG-Cluster-Editors -> Teams with edit access to cluster resources
+# SG-Cluster-Viewers -> Teams with read-only cluster access
+# SG-Security-Team -> Security team, cluster-reader plus ACS access
+# SG-Virt-Admins -> Virtualization team, admin for virt-specific namespaces

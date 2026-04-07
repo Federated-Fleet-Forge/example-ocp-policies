@@ -1,0 +1,35 @@
+# This policy may be replaced by AdminNetworkPolicy once
+# the CNFs support OpenShift 4.16
+# The PolicyGenerators deploying this manifest by deploy
+# to workload clusters only.
+# This policy adds an EgressFirewall object to all
+# non-cluster namespaces to prevent egress towards
+# the MachineNet with the exception of the API and APPs VIPs
+---
+apiVersion: k8s.ovn.org/v1
+kind: EgressFirewall
+metadata:
+  name: default
+spec:
+  egress:
+  # Allow connections to the API VIP
+  - type: Allow
+    to:
+      cidrSelector: '{{ fromConfigMap "openshift-config" "cluster-info" "api_vip_ip" }}/32'
+  # Allow connections to the APPs VIP
+  - type: Allow
+    to:
+      cidrSelector: '{{ fromConfigMap "openshift-config" "cluster-info" "apps_vip_ip" }}/32'
+  # Allow connections to the masters on tcp 6443 to ensure internal API calls still work
+  - type: Allow
+    to:
+      nodeSelector:
+        matchLabels:
+          node-role.kubernetes.io/master: ""
+    ports:
+      - port: 6443
+        protocol: TCP
+  # Deny any other connections to MachineNet CIDR
+  - type: Deny
+    to:
+      cidrSelector: '{{ fromConfigMap "openshift-config" "cluster-info" "machine_net_cidr" }}'

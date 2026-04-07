@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ldap-sync
+  annotations:
+    openshift.io/description: LDAP Group Sync namespace
+    openshift.io/display-name: LDAP Sync

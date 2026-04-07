@@ -1,0 +1,103 @@
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: PolicyGenerator
+metadata:
+  name: policy-group-virt-config
+placementBindingDefaults:
+  name: binding-group-virt-config
+policyDefaults:
+  categories:
+    - CM Configuration Management
+  controls:
+    - CM-6 Configuration Settings
+  namespace: policies
+  policySets:
+    - policyset-group-virt
+  remediationAction: enforce
+  severity: medium
+  standards:
+    - NIST SP 800-53
+policies:
+
+  # MetalLB Config - Start
+  - name: policy-group-virt-metallb-instance
+    consolidateManifests: false
+    orderManifests: true
+    manifests:
+      - path: MetalLB/metallb.yaml
+      - path: MetalLB/metallb-status.yaml
+        remediationAction: inform
+    dependencies:
+      - name: policy-group-virt-metallb-base
+  # MetalLB Config - End
+
+  # Virtualization Config - Start
+  - name: policy-group-virt-virtualization-hyperconverged
+    consolidateManifests: false
+    orderManifests: true
+    manifests:
+      - path: Virtualization/config/virtualization-hyperconverged.yaml
+      - path: Virtualization/config/virtualization-livemigration-net.yaml
+    dependencies:
+      - name: policy-group-virt-virtualization-base
+  # Virtualization Config - End
+
+  # ODF Storage Config - Start
+  - name: policy-group-virt-storage-odf-config
+    manifests:
+      - path: Storage/ODF/configs/policy-odf-storagecluster-no-multus.yaml
+      - path: Storage/ODF/configs/policy-odf-default-storageclass.yaml
+      - path: Storage/ODF/configs/policy-odf-storageSystem.yaml
+      - path: Storage/ODF/configs/policy-odf-console.yaml
+    dependencies:
+      - name: policy-group-virt-storage-odf-subscription
+  - name: policy-group-virt-storage-odf-status
+    remediationAction: inform
+    manifests:
+      - path: Storage/ODF/configs/policy-odf-storagecluster-status.yaml
+    dependencies:
+      - name: policy-group-virt-storage-odf-config
+  # ODF Storage Config - End
+
+  # LSO Config - Start
+  - name: policy-group-virt-storage-lso-config
+    manifests:
+      - path: Storage/LSO/configs/policy-lso-localvolumediscovery.yaml
+      - path: Storage/LSO/configs/policy-lso-localvolumeset.yaml
+    dependencies:
+      - name: policy-group-virt-storage-lso-subscription
+  - name: policy-group-virt-storage-lso-status
+    remediationAction: inform
+    manifests:
+      - path: Storage/LSO/configs/policy-lso-localvolumeset-status.yaml
+    dependencies:
+      - name: policy-group-virt-storage-lso-config
+  # LSO Config - End
+
+  # MTV Config - Start
+  - name: policy-group-virt-mtv-config
+    manifests:
+      - path: Migration/config/policy-mtv-forkliftcontroller.yaml
+    dependencies:
+      - name: policy-group-virt-mtv-subscription
+  # MTV Config - End
+
+  # Fencing Config - Start
+  - name: policy-group-virt-fencing-config
+    manifests:
+      - path: Fencing/config/policy-nodehealthcheck-master.yaml
+        complianceType: mustonlyhave
+      - path: Fencing/config/policy-nodehealthcheck-worker.yaml
+        complianceType: mustonlyhave
+      - path: Fencing/config/policy-nodehealthcheck-infra.yaml
+        complianceType: mustonlyhave
+      - path: Fencing/config/policy-fenceagentsremediationtemplate.yaml
+    dependencies:
+      - name: policy-group-virt-fencing-subscription
+  # Fencing Config - End
+
+policySets:
+  - name: policyset-group-virt
+    description: Configuration policies for the virtualization cluster group.
+    placement:
+      placementName: placement-group-virt

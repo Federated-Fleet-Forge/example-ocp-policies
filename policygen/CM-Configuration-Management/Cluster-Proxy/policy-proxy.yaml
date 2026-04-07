@@ -1,0 +1,8 @@
+apiVersion: config.openshift.io/v1
+kind: Proxy
+metadata:
+  name: cluster
+spec:
+  httpProxy: 'http://proxy.example.com:8080'
+  httpsProxy: 'http://proxy.example.com:8080'
+  noProxy: 'localhost,127.0.0.1,.cluster.local,100.104.0.0/14,100.108.0.0/16,ilo.internal.example.com,internal.example.com,internal.example.com,198.51.100.0/24,198.51.100.0/27,198.51.100.64/26,192.0.2.20/24,.example-cluster-1.internal.example.com,100.104.0.0/14,100.108.0.0/16,192.0.2.0/27,10.0.0.1/16'

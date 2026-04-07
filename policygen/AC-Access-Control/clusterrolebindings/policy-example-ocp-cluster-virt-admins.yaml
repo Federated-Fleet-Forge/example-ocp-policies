@@ -1,0 +1,75 @@
+# Virtualization admin RBAC - grants KubeVirt, CDI, storage, and network admin
+# to the virt-admins group across all virtualization clusters.
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: virt-admin-vm-access
+subjects:
+- kind: Group
+  name: sg-example-cluster-admins
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: ClusterRole
+  name: kubevirt.io:admin
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: virt-admin-storage-access
+subjects:
+- kind: Group
+  name: sg-example-cluster-admins
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: ClusterRole
+  name: cdi.kubevirt.io:admin
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: virt-admin-storage-infra
+subjects:
+- kind: Group
+  name: sg-example-cluster-admins
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: ClusterRole
+  name: storage-admin
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: virt-admin-network-access
+subjects:
+- kind: Group
+  name: sg-example-cluster-admins
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: ClusterRole
+  name: virt-network-provisioner
+  apiGroup: rbac.authorization.k8s.io
+# ---
+## Superseded with the virt-network-provisioner role above vs just reader.
+# apiVersion: rbac.authorization.k8s.io/v1
+# kind: ClusterRoleBinding
+# metadata:
+#   name: virt-admin-network-access
+# subjects:
+# - kind: Group
+#   name: sg-example-cluster-admins
+#   apiGroup: rbac.authorization.k8s.io
+# roleRef:
+#   kind: ClusterRole
+#   name: network-reader
+#   apiGroup: rbac.authorization.k8s.io
+
+# sg-example-group, this new group has cluster-admin privileges, Red Hat project resource and onshore Infrastructure resources are added to this
+# sg-example-group, this new group will contain suitably trained Vendor Virtualization resources, provides admin rights to virtualization specific namespaces, only trained resources should belong to this group
+# sg-example-group, this new group has cluster-admin privileges, Vendor OpenShift resources are added to this.
+# sg-example-group, this new group used to provide users with read-only access to clusters
+# sg-example-group, existing security group used by security team for auditing etc.
+# sg-example-group, this existing group provides cluster-admin rights to the hub management cluster example-acm-np, project Red Hat resources must be added to this along with suitably trained Vendor resources.

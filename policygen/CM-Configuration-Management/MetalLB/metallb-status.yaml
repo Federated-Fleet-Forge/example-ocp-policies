@@ -1,0 +1,9 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: metallb-operator-controller-manager
+  namespace: metallb-system
+status:
+  conditions:
+    - type: Available
+      status: 'True'

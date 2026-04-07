@@ -1,0 +1,13 @@
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+    name: fence-agents-remediation-subscription
+    namespace: openshift-workload-availability
+spec:
+    channel: stable
+    name: fence-agents-remediation
+    source: redhat-operators
+    sourceNamespace: openshift-marketplace
+status:
+  state: AtLatestKnown

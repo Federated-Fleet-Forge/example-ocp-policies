@@ -1,0 +1,43 @@
+---
+# Site-level PolicyGenerator demonstrates policies scoped to a specific site.
+# Clusters are matched using the label: site: site1
+#
+# This tier sits between "group" and "cluster" in the hierarchy:
+#   all -> group -> site -> cluster
+apiVersion: policy.open-cluster-management.io/v1
+kind: PolicyGenerator
+metadata:
+  name: policy-site-example
+placementBindingDefaults:
+  name: binding-site-example
+policyDefaults:
+  categories:
+    - CM Configuration Management
+  controls:
+    - CM-6 Configuration Settings
+  namespace: policies
+  policySets:
+    - policyset-site-example
+  remediationAction: enforce
+  severity: medium
+  standards:
+    - NIST SP 800-53
+policies:
+
+  # Site-specific storage taints - Start
+  - name: policy-site-storage-taints
+    manifests:
+      - path: Storage/Taints/storage.yaml
+  # Site-specific storage taints - End
+
+  # Site-specific ETCD backup - Start
+  # - name: policy-site-etcd-backup
+  #   manifests:
+  #     - path: ETCD-Backup/etcd-backup-cronjob.yaml
+  # Site-specific ETCD backup - End
+
+policySets:
+  - name: policyset-site-example
+    description: Site-level policies for site1. Demonstrates site-scoped configuration.
+    placement:
+      placementName: placement-site-site1

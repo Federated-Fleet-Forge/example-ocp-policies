@@ -1,0 +1,8 @@
+# patch openshift-operators ns with cluster-monitoring
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: openshift-operators
+  labels:
+    openshift.io/cluster-monitoring: 'true'

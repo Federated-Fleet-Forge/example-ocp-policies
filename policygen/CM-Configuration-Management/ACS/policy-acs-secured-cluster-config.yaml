@@ -1,0 +1,29 @@
+---
+apiVersion: platform.stackrox.io/v1alpha1
+kind: SecuredCluster
+metadata:
+  namespace: stackrox
+  name: stackrox-secured-cluster-services
+spec:
+  sensor:
+    resources:
+      limits:
+        cpu: 4000m
+        memory: 8000Mi
+      requests:
+        cpu: 2000m
+        memory: 4000Mi
+  clusterName: |
+    {{ fromSecret "open-cluster-management-agent" "hub-kubeconfig-secret" "cluster-name" | base64dec }}
+  auditLogs:
+    collection: Auto
+  centralEndpoint: |
+    {{ fromSecret "stackrox" "sensor-tls" "acs-host" | base64dec }}
+  admissionControl:
+    listenOnCreates: false
+    listenOnEvents: true
+    listenOnUpdates: false
+  perNode:
+    collector:
+      collection: CORE_BPF # TODO - ensure latest default
+    taintToleration: AvoidTaints

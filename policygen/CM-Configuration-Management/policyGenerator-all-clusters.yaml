@@ -1,0 +1,128 @@
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: PolicyGenerator
+metadata:
+  name: policy-all-cluster-settings
+placementBindingDefaults:
+  name: binding-all-cluster-settings
+policyDefaults:
+  categories:
+    - CM Configuration Management
+  controls:
+    - CM-6 Configuration Settings
+  namespace: policies
+  policySets:
+    - policyset-all-clusters
+  remediationAction: enforce
+  severity: medium
+  standards:
+    - NIST SP 800-53
+policies:
+
+# ACS Secured Cluster Policies - Start
+  - name: policy-all-secured-cluster-secrets
+    categories:
+      - SI System and Information Integrity
+    controls:
+      - SI-5 Security Alerts Advisories and Directives
+    manifests:
+      - path: ACS/policy-acs-secured-cluster-secrets.yaml
+  - name: policy-all-secured-cluster-config
+    categories:
+      - SI System and Information Integrity
+    controls:
+      - SI-5 Security Alerts Advisories and Directives
+    dependencies:
+      - name: policy-all-secured-cluster-secrets
+    manifests:
+      - path: ACS/policy-acs-secured-cluster-config.yaml
+# ACS Secured Cluster Policies - End
+
+# Cert Policies - Start
+  - name: policy-all-ca-bundles
+    manifests:
+      - path: Certificates/policy-user-ca-bundle.yaml
+      - path: Certificates/policy-ldap-ca-cert.yaml
+# Cert Policies - End
+
+# Certs config - Start
+  # - name: policy-all-cluster-certs
+  #   manifests:
+  #     - path: Certificates/policy-distribute-workload-cluster-certs.yaml
+# Certs config - End
+
+# API Server - Start
+  # - name: policy-all-api-server
+  #   manifests:
+  #     - path: API-Server/policy-api-server-config.yaml
+  #   dependencies:
+  #     - name: policy-all-cluster-certs
+# API Server - End
+
+# Cluster-Logging - Start
+  - name: policy-all-logging-base
+    manifests:
+      - path: Cluster-Logging/base/logging-namespace.yaml
+      - path: Cluster-Logging/base/logging-operator-group.yaml
+      - path: Cluster-Logging/base/logging-subscription.yaml
+  - name: policy-all-logging-config
+    manifests:
+      - path: Cluster-Logging/policy-logging-secrets.yaml
+      - path: Cluster-Logging/policy-logging-serviceaccount.yaml
+      - path: Cluster-Logging/policy-logging-viewaccount.yaml
+      - path: Cluster-Logging/policy-logging-forwarder-workload.yaml
+    dependencies:
+      - name: policy-all-logging-base
+# Cluster-Logging - End
+
+# Cluster-Observability - Start
+  - name: policy-all-observability
+    manifests:
+      - path: Cluster-Observability/base/coo-subscription.yaml
+# Cluster-Observability - End
+
+# Compliance - Start
+  # - name: policy-all-compliance-config
+  #   manifests:
+  #     - path: Compliance/policy-tailored-profiles-workload.yaml
+  #     - path: Compliance/policy-scan-binding-workload.yaml
+# Compliance - End
+
+# Kubeadmin Policies - Start
+  - name: policy-all-breakglass-check
+    remediationAction: inform
+    manifests:
+      - path: Compliance/policy-breakglass-check.yaml
+  - name: policy-all-remove-kubeadmin
+    manifests:
+      - path: Compliance/policy-remove-kubeadmin.yaml
+        complianceType: mustnothave
+    dependencies:
+      - name: policy-all-oauth
+      - name: policy-all-breakglass-check
+      - name: policy-all-cluster-rbac
+# Kubeadmin Policies - End
+
+# NS Labeler - Start
+  - name: policy-all-ns-labeller
+    consolidateManifests: false
+    manifests:
+      - path: Day2/Label-CNF-Namespaces/policy-cluster-ns-list-configmap.yaml
+        namespaceSelector:
+          include:
+            - openshift-config
+      - path: Day2/Label-CNF-Namespaces/policy-non-cluster-ns-labeller.yaml
+# NS Labeler - End
+
+# OAuth Start
+  - name: policy-all-oauth
+    manifests:
+      - path: OAuth/policy-ldap-bind-password.yaml
+      - path: OAuth/policy-oauth-workload.yaml
+# OAuth End
+
+policySets:
+  - name: policyset-all-clusters
+    description: Policies which apply to all managed clusters.
+    placement:
+      placementName: placement-all-managed-clusters

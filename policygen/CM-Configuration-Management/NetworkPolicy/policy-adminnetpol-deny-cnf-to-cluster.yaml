@@ -1,0 +1,28 @@
+apiVersion: policy.networking.k8s.io/v1alpha1
+kind: AdminNetworkPolicy
+metadata:
+  name: cnf-ns-to-cluster-ns-rules
+spec:
+  priority: 50
+  subject:
+    namespaces:
+      matchExpressions:
+        - {key: example-app-namespace, operator: Exists}
+  egress:
+  - name: "allow-cnf-basic-cluster-services"
+    action: "Allow"
+    to:
+    - namespaces:
+        matchExpressions:
+          - key: kubernetes.io/metadata.name
+            operator: In
+            values:
+              - default
+              - openshift-dns
+              - openshift-kni-infra
+  - name: "deny-cnf-ns-to-all-other-cluster-ns"
+    action: "Deny"
+    to:
+    - namespaces:
+        matchExpressions:
+          - {key: example-app-namespace, operator: DoesNotExist}

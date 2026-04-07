@@ -1,0 +1,204 @@
+# THESE POLICIES ARE DEPLOYED AS INFORM
+# AND ARE IMPLEMENTED VIA CGU.
+#
+# ANY MANIFESTS DEPLOYED VIA THIS POLICYGEN
+# MUST HAVE THE ran.openshift.io/ztp-deploy-wave
+# ANNOTATION added to indicate ZTP deployment order
+# See ztp-deploy-wave-numbering.md for info on
+# numbering.
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: PolicyGenerator
+metadata:
+  name: policy-group-virt-base
+placementBindingDefaults:
+  name: binding-group-virt-base
+policyDefaults:
+  categories:
+    - CM Configuration Management
+  controls:
+    - CM-6 Configuration Settings
+  namespace: policies
+  policySets:
+    - policyset-group-virt-base
+  remediationAction: inform
+  complianceType: musthave
+  severity: medium
+  standards:
+    - NIST SP 800-53
+policies:
+
+### WAVE 40 to 49 - Start ###
+  - name: policy-group-virt-machine-configs
+    policyAnnotations:
+      ran.openshift.io/ztp-deploy-wave: "41"
+    manifests:
+      - path: MachineConfig/kubeletconfig-autoreserved-master.yaml
+      - path: MachineConfig/kubeletconfig-autoreserved-standard.yaml
+
+  - name: policy-group-virt-internal-registry-base
+    policyAnnotations:
+      ran.openshift.io/ztp-deploy-wave: "41"
+    manifests:
+      - path: Internal-Registry/policy-internal-registry-pvc.yaml
+      - path: Internal-Registry/policy-internal-registry.yaml
+  - name: policy-group-virt-internal-registry-validator
+    policyAnnotations:
+      ran.openshift.io/ztp-deploy-wave: "42"
+    manifests:
+      - path: Internal-Registry/policy-validator-internal-registry-ready.yaml
+
+  - name: policy-group-virt-cluster-proxy-base
+    policyAnnotations:
+      ran.openshift.io/ztp-deploy-wave: "41"
+    manifests:
+      - path: Cluster-Proxy/policy-proxy.yaml
+
+  # ODF Storage - Start
+  - name: policy-group-virt-storage-odf-base
+    policyAnnotations:
+      ran.openshift.io/ztp-deploy-wave: "41"
+    manifests:
+      - path: Storage/ODF/base/odf-operator-ns-odf-on-masters.yaml
+      - path: Storage/ODF/base/odf-operator-operatorGroup.yaml
+  - name: policy-group-virt-storage-odf-subscription
+    policyAnnotations:
+      ran.openshift.io/ztp-deploy-wave: "42"
+    standards:
+      - Operator Version AtLatestKnown
+    manifests:
+      - path: Storage/ODF/base/odf-operator-subscription.yaml
+        patches:
+          - spec:
+              channel: stable-4.18
+  # ODF Storage - End
+
+  # LSO (used by ODF) - Start
+  - name: policy-group-virt-storage-lso-base
+    policyAnnotations:
+      ran.openshift.io/ztp-deploy-wave: "41"
+    manifests:
+      - path: Storage/LSO/base/local-storage-operator-namespace.yaml
+      - path: Storage/LSO/base/local-storage-operator-operator-group.yaml
+  - name: policy-group-virt-storage-lso-subscription
+    policyAnnotations:
+      ran.openshift.io/ztp-deploy-wave: "42"
+    standards:
+      - Operator Version AtLatestKnown
+    manifests:
+      - path: Storage/LSO/base/local-storage-operator-subscription.yaml
+        patches:
+          - spec:
+              channel: stable
+  # LSO (used by ODF) - End
+### WAVE 40 to 49 - End ###
+
+### WAVE 50 to 59 - Start ###
+  - name: policy-group-virt-networking-nmstate-base
+    policyAnnotations:
+      ran.openshift.io/ztp-deploy-wave: "51"
+    manifests:
+      - path: NMState/base/nmstate-ns.yaml
+      - path: NMState/base/nmstate-operatorGroup.yaml
+      - path: NMState/base/nmstate-subscription.yaml
+        patches:
+          - spec:
+              channel: stable
+              installPlanApproval: Automatic
+  - name: policy-group-virt-networking-nmstate-operand
+    policyAnnotations:
+      ran.openshift.io/ztp-deploy-wave: "53"
+    manifests:
+      - path: NMState/base/nmstate-nmstate.yaml
+### WAVE 50 to 59 - End ###
+
+### WAVE 100 to 109 - Start ###
+  # MetalLB operator install - Start
+  - name: policy-group-virt-metallb-base
+    policyAnnotations:
+      ran.openshift.io/ztp-deploy-wave: "101"
+    manifests:
+      - path: MetalLB/base/metallb-ns.yaml
+      - path: MetalLB/base/metallb-operatorGroup.yaml
+  - name: policy-group-virt-metallb-subscription
+    policyAnnotations:
+      ran.openshift.io/ztp-deploy-wave: "102"
+    standards:
+      - Operator Version AtLatestKnown
+    manifests:
+      - path: MetalLB/base/metallb-subscription.yaml
+        patches:
+          - spec:
+              channel: stable
+              installPlanApproval: Automatic
+  # MetalLB operator install - End
+
+  # Virtualization operator install - Start
+  - name: policy-group-virt-virtualization-base
+    policyAnnotations:
+      ran.openshift.io/ztp-deploy-wave: "101"
+    manifests:
+      - path: Virtualization/base/virtualization-operator-namespace.yaml
+      - path: Virtualization/base/virtualization-operator-operatorgroup.yaml
+  - name: policy-group-virt-virtualization-subscription
+    policyAnnotations:
+      ran.openshift.io/ztp-deploy-wave: "102"
+    standards:
+      - Operator Version AtLatestKnown
+    manifests:
+      - path: Virtualization/base/virtualization-operator-subscription.yaml
+        patches:
+          - spec:
+              channel: stable
+  # Virtualization operator install - End
+
+  # MTV operator install - Start
+  - name: policy-group-virt-mtv-base
+    policyAnnotations:
+      ran.openshift.io/ztp-deploy-wave: "101"
+    manifests:
+      - path: Migration/base/mtv-operator-ns.yaml
+      - path: Migration/base/mtv-operator-operatorGroup.yaml
+  - name: policy-group-virt-mtv-subscription
+    policyAnnotations:
+      ran.openshift.io/ztp-deploy-wave: "102"
+    standards:
+      - Operator Version AtLatestKnown
+    manifests:
+      - path: Migration/base/mtv-operator-subscription.yaml
+        patches:
+          - spec:
+              channel: release-v2.11
+              installPlanApproval: Automatic
+  # MTV operator install - End
+
+  # Fencing operator install - Start
+  - name: policy-group-virt-fencing-base
+    policyAnnotations:
+      ran.openshift.io/ztp-deploy-wave: "101"
+    manifests:
+      - path: Fencing/base/fencing-operator-ns.yaml
+      - path: Fencing/base/fencing-operator-operatorGroup.yaml
+  - name: policy-group-virt-fencing-subscription
+    policyAnnotations:
+      ran.openshift.io/ztp-deploy-wave: "102"
+    standards:
+      - Operator Version AtLatestKnown
+    manifests:
+      - path: Fencing/base/fencing-operator-subscription.yaml
+        patches:
+          - spec:
+              channel: stable
+      - path: Fencing/base/node-health-check-subscription.yaml
+        patches:
+          - spec:
+              channel: stable
+              installPlanApproval: Automatic
+  # Fencing operator install - End
+### WAVE 100 to 109 - End ###
+
+policySets:
+  - name: policyset-group-virt-base
+    description: Base policies for virtualization cluster group. Rolled out via CGU.
+    placement:
+      placementName: placement-group-virt

@@ -1,0 +1,52 @@
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: PolicyGenerator
+metadata:
+  name: policy-all-access-control-configuration
+placementBindingDefaults:
+  name: binding-all-access-control-configuration
+policyDefaults:
+  categories:
+    - AC Access Control
+  controls:
+    - AC-3 Access Enforcement
+  namespace: policies
+  policySets:
+    - access-control-all
+  remediationAction: enforce
+  severity: high
+  standards:
+    - NIST SP 800-53
+  complianceType: mustonlyhave
+policies:
+  - name: policy-all-cluster-rbac
+    manifests:
+      - path: clusterrolebindings/policy-allow-vddk-image-pull-internal-registry.yaml
+      - path: clusterrolebindings/policy-example-workload-cluster-readers.yaml
+      - path: clusterrolebindings/policy-example-self-provisioners.yaml
+      - path: clusterrolebindings/policy-example-ocp-cluster-admins.yaml
+      - path: clusterrolebindings/policy-example-admin-breakglass.yaml
+      - path: clusterroles/policy-example-ocp-virt-network-provisioner.yaml
+      - path: ldap-sync/policy-configmap-workload-groups.yaml
+      - path: ldap-sync/policy-ldap-sync-certs.yaml
+      - path: ldap-sync/policy-ldap-sync-clusterrole.yaml
+      - path: ldap-sync/policy-ldap-sync-example.yaml
+      - path: ldap-sync/policy-ldap-sync-cronjob.yaml
+      - path: ldap-sync/policy-ldap-sync-namespace.yaml
+        complianceType: mustonlyhave
+      - path: ldap-sync/policy-ldap-sync-secret.yaml
+      - path: ldap-sync/policy-ldap-sync-serviceaccount.yaml
+        complianceType: mustonlyhave
+    consolidateManifests: false
+    policySets:
+      - access-control-all
+  - name: policy-all-cluster-breakglass
+    manifests:
+      - path: breakglass/workload-policy-distribute-htpasswd-secret.yaml
+    policySets:
+      - access-control-all
+policySets:
+  - name: access-control-all
+    description: Access control policies applied to all managed clusters.
+    placement:
+      placementName: placement-all-managed-clusters

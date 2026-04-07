@@ -1,0 +1,24 @@
+# Apply to Workload clusters only
+# Add new line to the certs since it's required by oauth (see https://access.redhat.com/solutions/6984698)
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  labels:
+    transfered-from-hub: "true"
+  namespace: openshift-config
+  name: api-tlscert
+data:
+  tls.crt: '{{hub list ((lookup "v1" "Secret" "" (printf "cert-api-%s" .ManagedClusterName )).data.tlsCrt|base64dec) "\n" |join "" |base64enc | protect hub}}'
+  tls.key: '{{hub list ((lookup "v1" "Secret" "" (printf "cert-api-%s" .ManagedClusterName )).data.tlsKey|base64dec) "\n" |join "" |base64enc | protect hub}}'
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  labels:
+    transfered-from-hub: "true"
+  namespace: openshift-ingress
+  name: apps-tlscert
+data:
+  tls.crt: '{{hub list ((lookup "v1" "Secret" "" (printf "cert-app-%s" .ManagedClusterName )).data.tlsCrt|base64dec) "\n" |join "" |base64enc | protect hub}}'
+  tls.key: '{{hub list ((lookup "v1" "Secret" "" (printf "cert-app-%s" .ManagedClusterName )).data.tlsKey|base64dec) "\n" |join "" |base64enc | protect hub}}'

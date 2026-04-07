@@ -1,0 +1,11 @@
+apiVersion: config.openshift.io/v1
+kind: ImageTagMirrorSet
+metadata:
+  name: workload-cluster-itms
+spec:
+  imageTagMirrors:
+  - mirrors:
+    - '{{hub fromConfigMap "" "quay-config" "host1" hub}}'
+    - '{{hub fromConfigMap "" "quay-config" "host2" hub}}'
+    source: '{{hub fromConfigMap "" "quay-config" "host1" hub}}'
+    mirrorSourcePolicy: AllowContactingSource

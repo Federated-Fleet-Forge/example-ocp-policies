@@ -1,0 +1,48 @@
+---
+# Self Node Remediation (SNR) template - fallback remediation for when the BMC
+# is unreachable (e.g. node power failure where BMC shares the same power domain).
+#
+# SNR uses in-band (cluster operations) for peer health monitoring: each node runs an SNR agent that
+# participates in a health-check mesh. When a node is completely dead (agent
+# stops checking in), the SNR operator on a healthy node applies the
+# OutOfServiceTaint, allowing Kubernetes to force-delete pods without BMC access.
+#
+# WHY NOT USE SNR DIRECTLY INSTEAD OF FENCE AGENTS?
+#
+# SNR only applies the OutOfServiceTaint -- it cannot power-cycle a node. If a
+# node is hung (kernel panic, unresponsive kubelet) but still powered on, SNR
+# will taint it and Kubernetes will evict pods, but the old node's processes (containers and VMs)
+# (especially storage I/O) may still be running. This creates a split-brain
+# risk: replacement pods start writing to shared/RWO storage while the hung
+# node's processes are still active, leading to data corruption.
+#
+# Fence agents (fence_redfish) physically reboot the node via BMC, guaranteeing
+# the old instance is terminated before new pods are scheduled. This hard fence
+# is the only safe approach when the node might still be partially alive.
+#
+# SNR is safe as a *fallback* specifically because: if the BMC is also
+# unreachable, the node and BMC share the same power domain, which is strong
+# evidence the node is genuinely powered off (not just hung). In that scenario
+# the taint alone is sufficient -- there is no split-brain risk because the
+# node truly has no power.
+#
+# IMPORTANT: If BMC has dedicated/separate power (its own UPS or independent
+# power circuit), fence_redfish will succeed even during node power loss and
+# this SNR fallback is unnecessary. In that case you may remove this template,
+# the SNR subscription (base/self-node-remediation-subscription.yaml), and
+# revert the NodeHealthCheck resources to use a single remediationTemplate
+# instead of escalatingRemediations.
+#
+# Referenced by: escalatingRemediations order 1 in each NodeHealthCheck:
+#   config/policy-nodehealthcheck-worker.yaml
+#   config/policy-nodehealthcheck-master.yaml
+#   config/policy-nodehealthcheck-infra.yaml
+apiVersion: self-node-remediation.medik8s.io/v1alpha1
+kind: SelfNodeRemediationTemplate
+metadata:
+  name: self-node-remediation-outofservicetaint
+  namespace: openshift-workload-availability
+spec:
+  template:
+    spec:
+      remediationStrategy: OutOfServiceTaint

@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nettest-livemigration
+  namespace: default
+  annotations:
+    k8s.v1.cni.cncf.io/networks: livemigration-network
+spec:
+  containers:
+  - name: netshoot
+    image: registry.redhat.io/rhel9/support-tools:latest
+    command: ["sleep", "infinity"]
+    securityContext:
+      capabilities:
+        add: ["NET_ADMIN", "NET_RAW"]
+  terminationGracePeriodSeconds: 5

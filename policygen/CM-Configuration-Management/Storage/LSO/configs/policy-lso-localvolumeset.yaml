@@ -1,0 +1,28 @@
+apiVersion: local.storage.openshift.io/v1alpha1
+kind: LocalVolumeSet
+metadata:
+  name: localvolumeset
+  namespace: openshift-local-storage
+  annotations:
+spec:
+  deviceInclusionSpec:
+    deviceTypes:
+    - disk
+    minSize: '{{ fromConfigMap "openshift-config" "cluster-info" "odf_min_disk_size" }}' #2000Gi
+  tolerations:
+  - effect: NoSchedule
+    key: node.ocs.openshift.io/storage
+    operator: Equal
+    value: 'true'
+  - key: "node-role.kubernetes.io/master"
+    operator: "Exists"
+    effect: "NoSchedule"
+  volumeMode: Block
+  nodeSelector:
+    nodeSelectorTerms:
+    - matchExpressions:
+      - key: cluster.ocs.openshift.io/openshift-storage
+        operator: Exists
+  storageClassName: localvolumeset
+#status:
+#  totalProvisionedDeviceCount: '{{ fromConfigMap "openshift-config" "cluster-info" "odf_target_disk_count" }}'

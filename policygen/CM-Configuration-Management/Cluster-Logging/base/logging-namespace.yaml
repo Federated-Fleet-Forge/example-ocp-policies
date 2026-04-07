@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: openshift-logging
+  annotations:
+    openshift.io/description: Logging Operator namespace
+    openshift.io/display-name: Logging
+  labels:
+    openshift.io/cluster-monitoring: 'true'
+    openshift.io/cluster-logging: 'true'

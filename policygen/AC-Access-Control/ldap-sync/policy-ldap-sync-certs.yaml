@@ -1,0 +1,11 @@
+apiVersion: v1
+data:
+  ca.crt: |-
+    <REPLACE_WITH_YOUR_LDAP_CA_CERTIFICATE_CHAIN>
+    Paste your organization's CA certificate chain here in PEM format.
+    Include all intermediate and root CA certificates needed to verify
+    the LDAP server's TLS certificate.
+kind: ConfigMap
+metadata:
+  name: ca-config-map
+  namespace: ldap-sync

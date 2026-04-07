@@ -1,0 +1,40 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cluster-node-tuning-operator
+  namespace: openshift-cluster-node-tuning-operator
+status:
+  readyReplicas: 1
+  replicas: 1
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: openshift-cluster-node-tuning-operator
+status:
+  phase: Active
+---
+apiVersion: config.openshift.io/v1
+kind: ClusterOperator
+metadata:
+  name: node-tuning
+status:
+  conditions:
+    - type: Available
+      status: "True"
+    - type: Degraded
+      status: "False"
+    - type: Progressing
+      status: "False"
+---
+apiVersion: tuned.openshift.io/v1
+kind: Profile
+metadata:
+  namespace: openshift-cluster-node-tuning-operator
+status:
+  conditions:
+  - status: "True"
+    type: Applied
+  - status: "False"
+    type: Degraded

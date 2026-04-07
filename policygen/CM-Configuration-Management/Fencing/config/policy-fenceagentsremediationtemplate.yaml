@@ -1,0 +1,61 @@
+---
+## TODO - needs testing with Redfish.
+#  Applied to infra, master, and worker nodes (per NodeHealthCheck selector).
+#
+#  This template is used as escalatingRemediations order 0 (first attempt) in:
+#    config/policy-nodehealthcheck-worker.yaml  (escalation timeout: 2m)
+#    config/policy-nodehealthcheck-master.yaml  (escalation timeout: 2m)
+#    config/policy-nodehealthcheck-infra.yaml   (escalation timeout: 2m)
+#
+#  If fence_redfish fails (e.g. BMC unreachable during power failure), the
+#  NodeHealthCheck escalates to Self Node Remediation (order 1) after the
+#  escalation timeout. The escalation timeout in each NodeHealthCheck must
+#  exceed this template's spec.template.spec.timeout (currently 1m0s).
+#
+#  Timing chain for a worker node power failure (example):
+#    T+0s   : Node loses power
+#    T+15s  : NHC detects NotReady (unhealthyConditions duration: 15s)
+#    T+15s  : Order 0 starts - fence_redfish attempts BMC contact
+#    T+1m15s: FAR timeout expires (retrycount * retryinterval + overhead)
+#    T+2m15s: Order 0 escalation timeout (2m) expires, NHC escalates
+#    T+2m15s: Order 1 starts - SNR applies OutOfServiceTaint
+#    T+~3m  : Pods evicted from dead node and rescheduled
+apiVersion: fence-agents-remediation.medik8s.io/v1alpha1
+kind: FenceAgentsRemediationTemplate
+metadata:
+  name: fence-agents-redfish-generic
+  namespace: openshift-workload-availability
+spec:
+  template:
+    spec:
+      agent: fence_redfish
+      # The secrets containing the username/password are unique for each node,
+      # but they follow a predictable naming convention based on the node name.
+      nodeSecretNames:
+        # This mapping assumes the Kubernetes Node Name matches the BareMetalHost Name
+        # e.g., for node 'hosted-worker0', it looks for secret 'hosted-worker0-bmc-secret'
+        # The secret should contain keys: username, password, and optionally ipaddr
+        "{{ `{{ .NodeName }}` }}": bmh-secret
+      sharedparameters:
+        # Common parameters for all nodes using fence_redfish
+        # Action to perform when fencing (on, off, reboot, status)
+        action: reboot
+        # Port for Redfish API (default is 443 for HTTPS)
+        ipport: "443"
+        # Method for power operations (default is onoff)
+        method: onoff
+        # SSL/TLS options (insecure, secure, or auto)
+        ssl: secure
+        # Timeout for operations in seconds
+        timeout: "20"
+      #nodeParameters:
+        # Node-specific parameters that can be overridden per node
+        # The ipaddr parameter should automatically supplied based on the machines -> bmh which includes the IP address of the BMC.
+        # Format: "{{ `{{ .NodeName }}` }}": { "ipaddr": "<BMC_IP_ADDRESS>" }
+        # Example:
+        # "worker-0": { "ipaddr": "192.168.1.10" }
+        # "worker-1": { "ipaddr": "192.168.1.11" }
+      remediationStrategy: OutOfServiceTaint
+      retrycount: 5
+      retryinterval: 5s
+      timeout: 1m0s

@@ -1,0 +1,82 @@
+# Required from logging 6.0 onwards
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: logs-reader
+  namespace: openshift-logging
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+ name: view-logs
+rules:
+- verbs:
+  - get
+  apiGroups:
+  - ''
+  resources:
+  - pods
+  - pods/log
+- apiGroups:
+  - ""
+  resources:
+  - namespaces
+  verbs:
+  - get
+---
+# ClusterRoleBindings for viewing logs
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: logs-reader-view-logs
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: view-logs
+subjects:
+  - kind: ServiceAccount
+    name: logs-reader
+    namespace: openshift-logging
+#userNames:
+#  - system:serviceaccount:openshift-logging:logs-reader
+#---
+## ClusterRoleBindings for log write to LokiStack
+#apiVersion: rbac.authorization.k8s.io/v1
+#kind: ClusterRoleBinding
+#metadata:
+#  name: logview-cluster-logging-application-view
+#roleRef:
+#  name: cluster-logging-application-view
+#subjects:
+#  - kind: ServiceAccount
+#    name: logs-reader
+#    namespace: openshift-logging
+#userNames:
+#  - system:serviceaccount:openshift-logging:logs-reader
+#---
+#apiVersion: rbac.authorization.k8s.io/v1
+#kind: ClusterRoleBinding
+#metadata:
+#  name: logview-cluster-logging-audit-view
+#roleRef:
+#  name: cluster-logging-audit-view
+#subjects:
+#  - kind: ServiceAccount
+#    name: logs-reader
+#    namespace: openshift-logging
+#userNames:
+#  - system:serviceaccount:openshift-logging:logs-reader
+#---
+#apiVersion: rbac.authorization.k8s.io/v1
+#kind: ClusterRoleBinding
+#metadata:
+#  name: logview-cluster-logging-infrastructure-view
+#roleRef:
+#  name: cluster-logging-infrastructure-view
+#subjects:
+#  - kind: ServiceAccount
+#    name: logs-reader
+#    namespace: openshift-logging
+#userNames:
+#  - system:serviceaccount:openshift-logging:logs-reader

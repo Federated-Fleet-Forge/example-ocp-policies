@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: user-ca-bundle
+  namespace: openshift-config
+data:
+  ca-bundle.crt: |
+    <REPLACE_WITH_YOUR_CA_CERTIFICATE_BUNDLE>
+    Paste your organization's full CA certificate bundle here in PEM format.
+    This should include all CA certificates (root, issuing, intermediate)
+    that your cluster needs to trust for internal services (LDAP, proxies,
+    container registries, etc.)

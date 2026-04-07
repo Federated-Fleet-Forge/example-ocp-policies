@@ -1,0 +1,33 @@
+apiVersion: lvm.topolvm.io/v1alpha1
+kind: LVMCluster
+metadata:
+  name: sno-test-lvmcluster
+  namespace: openshift-storage
+spec:
+  tolerations:
+#  - effect: NoSchedule
+#    key: xyz
+#    operator: Equal
+#    value: "true"
+  storage:
+    deviceClasses:
+    - name: vg1-lvms
+      fstype: xfs
+      default: true
+#      nodeSelector:
+#        nodeSelectorTerms:
+#        - matchExpressions:
+#          - key: mykey
+#            operator: In
+#            values:
+#            - ssd
+      deviceSelector:
+        paths:
+        - /dev/disk/by-id/wwn-0x500a0751437defed
+        forceWipeDevicesAndDestroyAllData: true
+      thinPoolConfig:
+        name: thin-pool-1
+        sizePercent: 90
+        overprovisionRatio: 10
+        chunkSize: 128Ki
+        chunkSizeCalculationPolicy: Static

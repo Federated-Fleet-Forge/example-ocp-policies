@@ -1,0 +1,75 @@
+---
+apiVersion: remediation.medik8s.io/v1alpha1
+kind: NodeHealthCheck
+metadata:
+  name: redfish-node-remediation-check-worker
+  namespace: openshift-workload-availability
+spec:
+  minHealthy: 60%
+  # Selector: targets worker nodes only.
+  # Workers run workloads only; faster remediation restores capacity sooner.
+  # Less risk of cluster-level disruption compared to masters.
+  selector:
+    matchLabels:
+      node-role.kubernetes.io/worker: ""
+  # Escalating remediations: if the first strategy fails (e.g. BMC unreachable
+  # during a power failure), NHC escalates to the next strategy after the
+  # specified timeout.
+  #
+  # Why not skip straight to SNR? Fence agents physically power-cycle the node
+  # via BMC, guaranteeing it is off before pods are rescheduled. SNR can only
+  # apply the OutOfServiceTaint -- it cannot stop a hung node's processes. Using
+  # SNR alone risks split-brain / data corruption if the node is still partially
+  # alive (e.g. kernel hung, network partitioned). SNR is safe as a fallback
+  # only when the BMC is also unreachable, which is strong evidence of a genuine
+  # power loss (no split-brain risk).
+  # See: config/policy-selfnoderemediationtemplate.yaml for full rationale.
+  #
+  # IMPORTANT: If BMC has dedicated/separate power (its own UPS or independent
+  # power circuit), fence_redfish will always be reachable and the SNR fallback
+  # (order 1) is unnecessary. In that case, remove the escalatingRemediations
+  # block entirely and replace with a single remediationTemplate:
+  #   remediationTemplate:
+  #     apiVersion: fence-agents-remediation.medik8s.io/v1alpha1
+  #     kind: FenceAgentsRemediationTemplate
+  #     name: fence-agents-redfish-generic
+  #     namespace: openshift-workload-availability
+  escalatingRemediations:
+    # Order 0: Fence Agents Remediation (out-of-band via BMC/Redfish).
+    # Timeout: must exceed the FAR template's own timeout (1m) plus retries.
+    # See: config/policy-fenceagentsremediationtemplate.yaml
+    #   -> spec.template.spec.timeout    = 1m0s  (overall FAR timeout)
+    #   -> spec.template.spec.retrycount = 5
+    #   -> spec.template.spec.retryinterval = 5s
+    # The escalation timeout below should be comfortably longer than FAR's
+    # timeout to avoid premature escalation. Adjust if FAR timings change.
+    - remediationTemplate:
+        apiVersion: fence-agents-remediation.medik8s.io/v1alpha1
+        kind: FenceAgentsRemediationTemplate
+        name: fence-agents-redfish-generic
+        namespace: openshift-workload-availability
+      order: 0
+      timeout: 2m
+    # Order 1: Self Node Remediation (in-band, no BMC required).
+    # Activates only if order 0 fails (BMC unreachable). SNR's peer health
+    # mesh detects the dead node and applies OutOfServiceTaint from a healthy node.
+    # See: config/policy-selfnoderemediationtemplate.yaml
+    - remediationTemplate:
+        apiVersion: self-node-remediation.medik8s.io/v1alpha1
+        kind: SelfNodeRemediationTemplate
+        name: self-node-remediation-outofservicetaint
+        namespace: openshift-workload-availability
+      order: 1
+      timeout: 5m
+  unhealthyConditions:
+    # Ready=False: kubelet has stopped reporting; node is down.
+    # Timing: 15s - aggressive for workers to quickly recover workloads
+    # and free stuck pods. Brief transient issues are acceptable trade-off.
+    - type: Ready
+      status: "False"
+      duration: 15s
+    # Ready=Unknown: kubelet unreachable (network partition, node hung).
+    # Same short duration for workload nodes.
+    - type: Ready
+      status: "Unknown"
+      duration: 15s

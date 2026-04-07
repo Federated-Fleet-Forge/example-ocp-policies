@@ -1,0 +1,33 @@
+## This manifest is for SNO clusters which only require the MCG (noobaa) component of ODF.
+apiVersion: ocs.openshift.io/v1
+kind: StorageCluster
+metadata:
+  annotations:
+    uninstall.ocs.openshift.io/cleanup-policy: delete
+    uninstall.ocs.openshift.io/mode: graceful
+  name: ocs-storagecluster
+  namespace: openshift-storage
+spec:
+  arbiter: {}
+  encryption:
+    kms: {}
+  externalStorage: {}
+  resourceProfile: "lean"
+  enableCephTools: false
+  allowRemoteStorageConsumers: false
+  managedResources:
+    cephObjectStoreUsers: {}
+    cephCluster: {}
+    cephBlockPools: {}
+    cephNonResilientPools: {}
+    cephObjectStores: {}
+    cephFilesystems: {}
+    cephRBDMirror: {}
+    cephToolbox: {}
+    cephDashboard: {}
+    cephConfig: {}
+  mirroring: {}
+  multiCloudGateway:
+    dbStorageClassName: lvms-vg1-lvms
+    reconcileStrategy: standalone
+    disableLoadBalancerService: true

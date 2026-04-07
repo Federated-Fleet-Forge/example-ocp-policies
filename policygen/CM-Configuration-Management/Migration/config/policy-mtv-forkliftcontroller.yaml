@@ -1,0 +1,14 @@
+apiVersion: forklift.konveyor.io/v1beta1
+kind: ForkliftController
+metadata:
+  name: forklift-controller
+  namespace: openshift-mtv
+spec:
+  controller_transfer_network: default/livemigration-network
+  feature_auth_required: 'false'
+  feature_copy_offload: 'true'
+  feature_ocp_live_migration: 'true'
+  feature_ova_appliance_management: 'true'
+  feature_ui_plugin: 'true'
+  feature_validation: 'true'
+  feature_volume_populator: 'true'

@@ -1,0 +1,24 @@
+apiVersion: operator.openshift.io/v1
+kind: KubeAPIServer
+metadata:
+  name: cluster
+status:
+  conditions:
+    - reason: EncryptionCompleted
+---
+apiVersion: operator.openshift.io/v1
+kind: Authentication
+metadata:
+  name: cluster
+status:
+  conditions:
+    - reason: EncryptionCompleted
+---
+apiVersion: operator.openshift.io/v1
+kind: OpenShiftAPIServer
+metadata:
+  name: cluster
+status:
+  conditions:
+    - reason: EncryptionCompleted
+

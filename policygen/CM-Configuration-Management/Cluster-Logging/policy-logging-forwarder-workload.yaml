@@ -1,0 +1,65 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: ConfigurationPolicy
+metadata:
+  name: policy-logging-forwarder-workload
+spec:
+  severity: medium
+  object-templates-raw: |
+    - complianceType: musthave
+      objectDefinition:
+        apiVersion: observability.openshift.io/v1
+        kind: ClusterLogForwarder
+        metadata:
+          name: collector
+          namespace: openshift-logging
+          annotations:
+            observability.openshift.io/log-level: info
+        spec:
+          managementState: Managed
+          filters:
+            - name: parse-json
+              type: parse
+            - name: labels
+              type: openshiftLabels
+              openshiftLabels:
+                cluster-name: '{{ fromClusterClaim "name" }}'
+          inputs:
+            - name: additional-cluster-logs
+              type: application
+              application:
+                includes:
+                  - namespace: ldap-sync
+                  - namespace: ocp-backup-etcd
+                  - namespace: stackrox
+                  - namespace: rhacs-operator
+            - name: app-pod-logs
+              type: application
+              application:
+                excludes:
+                  - namespace: '{{ fromClusterClaim "name" }}'
+                  - namespace: cluster-day2
+                includes:
+                {{- range (lookup "v1" "Namespace" "" "" "example-app-namespace=").items }}
+                  - namespace: {{ .metadata.name }}
+                {{- end }}
+          outputs:
+            # Replace with your log aggregation endpoint
+            - name: log-aggregator
+              type: http
+              http:
+                url: https://<LOG_AGGREGATOR_ENDPOINT>/api/v2/logs/ingest
+                headers:
+                  Content-Type: application/json
+                  Authorization: Api-Token {{ (lookup "v1" "Secret" "openshift-logging" "log-aggregator-token").data.token | base64dec }}
+                method: POST
+          pipelines:
+            - name: app-logs-to-aggregator
+              inputRefs:
+                - app-pod-logs
+              outputRefs:
+                - log-aggregator
+              filterRefs:
+                - parse-json
+                - labels
+          serviceAccount:
+            name: collector

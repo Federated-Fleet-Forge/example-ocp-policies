@@ -1,0 +1,19 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: backup-etcd-alert
+  namespace: ocpadmin-etcd-backup
+spec:
+  groups:
+  - name: job-status
+    rules:
+    - alert: ETCDBackupJobFailed
+      annotations:
+        description: The CronJob to backup OpenShift etcd is failing.
+        message: Job {{ `{{ $labels.namespace }}` }}/{{ `{{ $labels.job_name }}` }} to backup OpenShift etcd failed to complete. 
+        summary: Job {{ `{{ $labels.namespace }}` }}/{{ `{{ $labels.job_name }}` }} to backup OpenShift etcd failed to complete. 
+      expr: |
+        kube_job_status_failed{job="kube-state-metrics",job_name=~"openshift-backup.*"} > 0
+      for: 5m
+      labels:
+        severity: warning

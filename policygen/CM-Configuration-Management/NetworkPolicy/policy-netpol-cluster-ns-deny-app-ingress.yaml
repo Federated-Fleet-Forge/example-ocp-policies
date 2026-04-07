@@ -1,0 +1,12 @@
+# This policy will be replaced by AdminNetworkPolicy once
+# the CNFs support OpenShift 4.16
+# The PolicyGenerators deploying this manifest by deploy
+# to workload clusters only.
+---
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: deny-by-default
+spec:
+  podSelector: {}
+  ingress: []

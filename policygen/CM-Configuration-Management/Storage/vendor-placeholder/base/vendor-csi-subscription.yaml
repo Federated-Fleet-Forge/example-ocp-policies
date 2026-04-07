@@ -1,0 +1,13 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: vendor-csi-operator
+  namespace: vendor-csi
+  annotations:
+    ran.openshift.io/ztp-deploy-wave: "2"
+spec:
+  channel: stable
+  installPlanApproval: Automatic
+  name: <VENDOR_CSI_OPERATOR_NAME>
+  source: certified-operators
+  sourceNamespace: openshift-marketplace

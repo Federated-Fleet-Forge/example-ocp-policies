@@ -1,0 +1,67 @@
+# Cluster admin RBAC - grants cluster-admin to infrastructure and platform teams.
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: sg-example-group
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+  - apiGroup: rbac.authorization.k8s.io
+    kind: Group
+    name: sg-example-group
+---
+# Vendor OpenShift Team, cluster-admin
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: sg-example-group
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+  - apiGroup: rbac.authorization.k8s.io
+    kind: Group
+    name: sg-example-group
+
+---
+# Example Org OpenShift Infrastructure Team, Red Hat team, cluster-admin
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: sg-example-cluster-admins
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+  - apiGroup: rbac.authorization.k8s.io
+    kind: Group
+    name: sg-example-cluster-admins
+---
+# Vendor Virtualization Team, virt admins
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: sg-example-cluster-admins
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+  - kind: Group
+    name: sg-example-cluster-admins
+    apiGroup: rbac.authorization.k8s.io
+---
+
+
+# sg-example-group, this new group has cluster-admin privileges, Red Hat project resource and onshore Infrastructure resources are added to this
+# sg-example-group, this new group will contain suitably trained Vendor Virtualization resources, provides admin rights to virtualization specific namespaces, only trained resources should belong to this group
+# sg-example-group, this new group has cluster-admin privileges, Vendor OpenShift resources are added to this.
+# sg-example-group, this new group used to provide users with read-only access to clusters
+# sg-example-group, existing security group used by security team for auditing etc.
+# sg-example-group, this existing group provides cluster-admin rights to the hub management cluster example-acm-np, project Red Hat resources must be added to this along with suitably trained Vendor resources.

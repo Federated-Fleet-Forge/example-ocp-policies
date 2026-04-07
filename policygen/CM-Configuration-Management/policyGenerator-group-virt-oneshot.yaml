@@ -1,0 +1,80 @@
+# THESE POLICIES ARE DEPLOYED AS INFORM
+# AND ARE IMPLEMENTED VIA CGU AS A ONE-SHOT ONLY
+#
+# ANY MANIFESTS DEPLOYED VIA THIS POLICYGEN
+# MUST HAVE THE ran.openshift.io/ztp-deploy-wave
+# ANNOTATION added to indicate ZTP deployment order
+# See ztp-deploy-wave-numbering.md for info on
+# numbering.
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: PolicyGenerator
+metadata:
+  name: policy-group-virt-oneshot
+placementBindingDefaults:
+  name: binding-group-virt-oneshot
+policyDefaults:
+  categories:
+    - CM Configuration Management
+  controls:
+    - CM-6 Configuration Settings
+  namespace: policies
+  policySets:
+    - policyset-group-virt-oneshot
+  remediationAction: inform
+  complianceType: musthave
+  severity: medium
+  standards:
+    - NIST SP 800-53
+
+policies:
+
+### WAVE 20 to 29 - Start ###
+  # Pause MCPs so that all MC changes can be made
+  # after which the MCPs can later be unpaused
+  # to minimise rolling reboots during policy apply
+  - name: policy-group-virt-mcp-20-pause
+    evaluationInterval:
+      compliant: never
+    policyAnnotations:
+      ran.openshift.io/ztp-deploy-wave: "20"
+    manifests:
+      - path: MachineConfigPool/pause-mcps-master.yaml
+        patches:
+          - metadata:
+              annotations:
+                ran.openshift.io/ztp-pause-first: "done"
+      - path: MachineConfigPool/pause-mcps-worker.yaml
+        patches:
+          - metadata:
+              name: standard
+              annotations:
+                ran.openshift.io/ztp-pause-first: "done"
+### WAVE 20 to 29 - End ###
+
+### WAVE 60 to 69 - Start ###
+  # Unpause MCPs to allow rolling reboots
+  - name: policy-group-virt-mcp-60-unpause
+    evaluationInterval:
+      compliant: never
+    policyAnnotations:
+      ran.openshift.io/ztp-deploy-wave: "60"
+    manifests:
+      - path: MachineConfigPool/unpause-mcps-master.yaml
+        patches:
+          - metadata:
+              annotations:
+                ran.openshift.io/ztp-unpause-first: "done"
+      - path: MachineConfigPool/unpause-mcps-worker.yaml
+        patches:
+          - metadata:
+              name: standard
+              annotations:
+                ran.openshift.io/ztp-unpause-first: "done"
+### WAVE 60 to 69 - End ###
+
+policySets:
+  - name: policyset-group-virt-oneshot
+    description: One-shot policies for the virtualization cluster group. Rolled out via CGU.
+    placement:
+      placementName: placement-group-virt-oneshot

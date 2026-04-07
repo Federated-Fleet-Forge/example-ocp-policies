@@ -1,0 +1,8 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: cluster-day2
+  annotations:
+    openshift.io/description: Cluster Day2 Operations
+    openshift.io/display-name: Cluster Day2

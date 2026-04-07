@@ -1,0 +1,86 @@
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: PolicyGenerator
+metadata:
+  name: policy-hub-config
+placementBindingDefaults:
+  name: binding-hub-config
+policyDefaults:
+  categories:
+    - CM Configuration Management
+  controls:
+    - CM-6 Configuration Settings
+  namespace: policies
+  policySets:
+    - policyset-hub
+  remediationAction: enforce
+  severity: medium
+  standards:
+    - NIST SP 800-53
+policies:
+
+# ACM Policies - Start
+  - name: policy-acm-config
+    manifests:
+      - path: ACM/policy-agent-service-config.yaml
+# ACM Policies - End
+
+# ACS Central - Start
+  - name: policy-hub-acs-base
+    manifests:
+      - path: ACS/base/acs-operator-ns.yaml
+      - path: ACS/base/acs-stackrox-ns.yaml
+      - path: ACS/base/acs-operatorGroup.yaml
+      - path: ACS/base/acs-subscription.yaml
+  - name: policy-hub-acs-central
+    manifests:
+      - path: ACS/policy-acs-central.yaml
+      - path: ACS/policy-acs-central-config.yaml
+    dependencies:
+      - name: policy-hub-acs-base
+  - name: policy-hub-acs-central-status
+    remediationAction: inform
+    manifests:
+      - path: ACS/policy-acs-central-status.yaml
+    dependencies:
+      - name: policy-hub-acs-central
+  - name: policy-hub-acs-init-bundle
+    manifests:
+      - path: ACS/policy-acs-central-jobs-rbac.yaml
+      - path: ACS/policy-acs-central-job-init-bundle.yaml
+    dependencies:
+      - name: policy-hub-acs-central-status
+  - name: policy-hub-acs-sync-resources
+    manifests:
+      - path: ACS/policy-acs-sync-resources.yaml
+    dependencies:
+      - name: policy-hub-acs-init-bundle
+# ACS Central - End
+
+# Console Policies - Start
+  - name: policy-hub-console
+    manifests:
+      - path: Console/policy-console-link-gitops-ztp.yaml
+# Console Policies - End
+
+# Logging (hub forwarder) - Start
+  - name: policy-hub-logging-base
+    manifests:
+      - path: Cluster-Logging/base/logging-namespace.yaml
+      - path: Cluster-Logging/base/logging-operator-group.yaml
+      - path: Cluster-Logging/base/logging-subscription.yaml
+  - name: policy-hub-logging-config
+    manifests:
+      - path: Cluster-Logging/policy-logging-secrets.yaml
+      - path: Cluster-Logging/policy-logging-serviceaccount.yaml
+      - path: Cluster-Logging/policy-logging-viewaccount.yaml
+      - path: Cluster-Logging/policy-logging-forwarder-hub.yaml
+    dependencies:
+      - name: policy-hub-logging-base
+# Logging (hub forwarder) - End
+
+policySets:
+  - name: policyset-hub
+    description: Configuration policies for the hub cluster.
+    placement:
+      placementName: placement-hub-clusters

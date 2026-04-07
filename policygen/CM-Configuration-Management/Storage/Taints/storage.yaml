@@ -1,0 +1,22 @@
+# Reference - https://docs.redhat.com/en/documentation/red_hat_openshift_data_foundation/4.16/html/managing_and_allocating_storage_resources/how-to-use-dedicated-worker-nodes-for-openshift-data-foundation_rhodf#anatomy_of_an_infrastructure_node
+apiVersion: policy.open-cluster-management.io/v1
+kind: ConfigurationPolicy
+metadata:
+  name: node-taint-storage
+spec:
+#  remediationAction: inform
+  severity: medium
+  object-templates-raw: |
+    {{- range $nodes := (lookup "v1" "Node" "" "" "cluster.ocs.openshift.io/openshift-storage").items }}
+    - complianceType: musthave
+      objectDefinition:
+        apiVersion: v1
+        kind: Node
+        metadata:
+          name: {{ $nodes.metadata.name }}
+        spec:
+          taints:
+          - effect: NoSchedule
+            key: node.ocs.openshift.io/storage
+            value: "true"
+    {{- end }}

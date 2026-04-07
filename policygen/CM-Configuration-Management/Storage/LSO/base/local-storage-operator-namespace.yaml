@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: openshift-local-storage
+  annotations:
+    openshift.io/description: Local Storage Operator namespace
+    openshift.io/display-name: Local Storage
+  labels:
+    openshift.io/cluster-monitoring: 'true'

@@ -1,0 +1,40 @@
+# This policy will be replaced by AdminNetworkPolicy once
+# the CNFs support OpenShift 4.16
+# The PolicyGenerators deploying this manifest by deploy
+# to workload clusters only.
+# This policy is used to filter out namespaces
+# that should not have the "example-app-namespace" label
+# applied. Each string in the list will be wildcard matched.
+#
+# DO NOT MODIFY THIS FILE UNLESS YOU ABSOLUTELY CONFIDENT
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: example-cluster-ns-list
+  namespace: openshift-config
+data:
+  namespaces: |
+    aap
+    ansible-automation-platform
+    assisted-installer
+    clus-
+    cluster-day2
+    default
+    default-broker
+    hive
+    hypershift
+    kube-
+    local-cluster
+    ldap-sync
+    metallb
+    multicluster-engine
+    ocpadmin-
+    open-cluster-management
+    openshift
+    policies
+    quay
+    rhacs
+    rhacm
+    stackrox
+    ztp

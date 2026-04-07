@@ -1,0 +1,128 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: ConfigurationPolicy
+metadata:
+  name: policy-csdb-logging-forwarder-hub
+spec:
+#  remediationAction: inform
+  severity: medium
+  object-templates-raw: |
+    - complianceType: musthave
+      objectDefinition:
+        apiVersion: observability.openshift.io/v1
+        kind: ClusterLogForwarder
+        metadata:
+          name: collector
+          namespace: openshift-logging
+          annotations:
+            observability.openshift.io/log-level: info
+        spec:
+          managementState: Managed
+          filters:
+            - name: parse-json
+              type: parse
+            - name: labels
+              type: openshiftLabels
+              openshiftLabels:
+                cluster-name: '{{ fromConfigMap "openshift-config" "cluster-info" "cluster_name" }}' # tbc
+                environment: ROV
+            - name: filter-audit-log
+              type: kubeAPIAudit
+              kubeAPIAudit:
+                # Don't generate audit events for all requests in RequestReceived stage.
+                omitStages:
+                  - "RequestReceived"
+        
+                rules:
+                  # Log pod changes at RequestResponse level
+                  - level: RequestResponse
+                    resources:
+                    - group: ""
+                      resources: ["pods"]
+        
+                  # Log "pods/log", "pods/status" at Metadata level
+                  - level: Metadata
+                    resources:
+                    - group: ""
+                      resources: ["pods/log", "pods/status"]
+        
+                  # Don't log requests to a configmap called "controller-leader"
+                  - level: None
+                    resources:
+                    - group: ""
+                      resources: ["configmaps"]
+                      resourceNames: ["controller-leader"]
+        
+                  # Don't log watch requests by the "system:kube-proxy" on endpoints or services
+                  - level: None
+                    users: ["system:kube-proxy"]
+                    verbs: ["watch"]
+                    resources:
+                    - group: "" # core API group
+                      resources: ["endpoints", "services"]
+        
+                  # Don't log authenticated requests to certain non-resource URL paths.
+                  - level: None
+                    userGroups: ["system:authenticated"]
+                    nonResourceURLs:
+                    - "/api*" # Wildcard matching.
+                    - "/version"
+        
+                  # Log the request body of configmap changes in kube-system.
+                  - level: Request
+                    resources:
+                    - group: "" # core API group
+                      resources: ["configmaps"]
+                    # This rule only applies to resources in the "kube-system" namespace.
+                    # The empty string "" can be used to select non-namespaced resources.
+                    namespaces: ["kube-system"]
+        
+                  # Log configmap and secret changes in all other namespaces at the Metadata level.
+                  - level: Metadata
+                    resources:
+                    - group: "" # core API group
+                      resources: ["secrets", "configmaps"]
+        
+                  # Log all other resources in core and extensions at the Request level.
+                  - level: Request
+                    resources:
+                    - group: "" # core API group
+                    - group: "extensions" # Version of group should NOT be included.
+        
+                  # A catch-all rule to log all other requests at the Metadata level.
+                  - level: Metadata
+          inputs:
+            - name: additional-cluster-logs
+              type: application
+              application:
+                includes:
+                  - namespace: ldap-sync
+                  - namespace: ocp-backup-etcd
+                  - namespace: openscluster-management-agent
+                  - namespace: openscluster-management-agent-addon
+                  - namespace: stackrox
+                  - namespace: rhacs-operator  
+          ### Removed from SecOps request - 29/10/25        
+          # outputs: # merges with outputs defined in source-cr
+          #  - name: google-secops-bindplane # some friendly name for the destination logging endpoint
+          #    type: syslog
+          #    syslog:
+          #      appName: '{{ fromConfigMap "openshift-config" "cluster-info" "cluster_name" }}' # tbc
+          #      facility: user
+          #      msgId: '{{ fromConfigMap "openshift-config" "cluster-info" "cluster_name" }}' # tbc
+          #      procId: '{{ fromConfigMap "openshift-config" "cluster-info" "cluster_name" }}' # tbc
+          #      rfc: RFC5424
+          #      severity: Informational
+          #      url: tcp://198.51.100.45:23514
+          #      enrichment: KubernetesMinimal
+          # pipelines:
+          #   - name: syslog-cluster-audit
+          #     inputRefs:
+          #       - audit
+          #     outputRefs:
+          #       - google-secops-bindplane
+          #     filterRefs:
+          #       - parse-json
+          #       - labels
+          #       #- filter-audit-log
+          serviceAccount:
+            name: collector

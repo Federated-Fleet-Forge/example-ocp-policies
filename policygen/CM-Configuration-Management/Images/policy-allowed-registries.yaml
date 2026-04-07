@@ -1,0 +1,36 @@
+apiVersion: config.openshift.io/v1
+kind: Image
+metadata:
+  annotations:
+    release.openshift.io/create-only: "true"
+  name: cluster
+spec:
+  allowedRegistriesForImport:
+    - domainName: registry.redhat.io
+      insecure: false
+    - domainName: registry.access.redhat.com
+      insecure: false
+    - domainName: registry.connect.redhat.com
+      insecure: false
+    - domainName: quay.io
+      insecure: false
+    - domainName: docker.io
+      insecure: false
+    - domainName: registry-auth.twistlock.com
+      insecure: false
+    - domainName: registry.k8s.io
+      insecure: false
+    - domainName: image-registry.openshift-image-registry.svc:5000
+    - domainName: registry-quay-quay.apps.hub.internal.example.com
+      insecure: false
+  registrySources:
+    allowedRegistries:
+      - registry.redhat.io
+      - registry.access.redhat.com
+      - registry.connect.redhat.com
+      - registry-auth.twistlock.com
+      - quay.io
+      - docker.io
+      - registry.k8s.io
+      - image-registry.openshift-image-registry.svc:5000
+      - registry-quay-quay.apps.hub.internal.example.com
