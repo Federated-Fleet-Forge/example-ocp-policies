@@ -23,6 +23,10 @@ Argo CD **ApplicationSets** in [example-ocp-gitops-base](https://github.com/dust
 
 No direct cluster-side apply is required for day-to-day policy changes if GitOps drift correction is enabled and RBAC is configured as documented in the bootstrap repo.
 
+## Security and Access
+
+Because Git RBAC is repository-wide, this repository is kept physically separate from the hub bootstrap (`example-ocp-gitops-base`). This split ensures that Engineering Teams can safely submit Pull Requests to manage day-to-day policy changes (like Operator lifecycles or configuration rollouts) without requiring admin access to the core GitOps engine or root App-of-Apps. 
+
 ## Related repositories
 
 - [example-ocp-gitops-base](https://github.com/dusty-seahorse/example-ocp-gitops-base) — Architecture, hub bootstrap, and ApplicationSet definitions ([docs/architecture.md](https://github.com/dusty-seahorse/example-ocp-gitops-base/blob/main/docs/architecture.md))
