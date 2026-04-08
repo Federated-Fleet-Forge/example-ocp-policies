@@ -19,7 +19,7 @@ Paths and file names should remain compatible with the ApplicationSet generators
 
 ## How policies are deployed
 
-Argo CD **ApplicationSets** in [example-ocp-gitops-base](https://github.com/dusty-seahorse/example-ocp-gitops-base) watch this repository. When you merge changes here, the hub GitOps instance discovers updates and reconciles generated policy resources onto managed clusters according to placements and managed cluster labels.
+Argo CD **ApplicationSets** in [example-ocp-gitops-base](https://github.com/federated-fleet-forge/example-ocp-gitops-base) watch this repository. When you merge changes here, the hub GitOps instance discovers updates and reconciles generated policy resources onto managed clusters according to placements and managed cluster labels.
 
 No direct cluster-side apply is required for day-to-day policy changes if GitOps drift correction is enabled and RBAC is configured as documented in the bootstrap repo.
 
@@ -29,5 +29,5 @@ Because Git RBAC is repository-wide, this repository is kept physically separate
 
 ## Related repositories
 
-- [example-ocp-gitops-base](https://github.com/dusty-seahorse/example-ocp-gitops-base) — Architecture, hub bootstrap, and ApplicationSet definitions ([docs/architecture.md](https://github.com/dusty-seahorse/example-ocp-gitops-base/blob/main/docs/architecture.md))
-- [example-ocp-ztp](https://github.com/dusty-seahorse/example-ocp-ztp) — Cluster-specific ZTP configuration and per-cluster policy inputs that complement fleet-wide baselines
+- [example-ocp-gitops-base](https://github.com/federated-fleet-forge/example-ocp-gitops-base) — Architecture, hub bootstrap, and ApplicationSet definitions ([docs/architecture.md](https://github.com/federated-fleet-forge/example-ocp-gitops-base/blob/main/docs/architecture.md))
+- [example-ocp-ztp](https://github.com/federated-fleet-forge/example-ocp-ztp) — Cluster-specific ZTP configuration and per-cluster policy inputs that complement fleet-wide baselines
