@@ -19,7 +19,6 @@ policyDefaults:
   remediationAction: inform
   policySets:
     - policyset-site-example
-  remediationAction: enforce
   severity: medium
   standards:
     - NIST SP 800-53
