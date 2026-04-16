@@ -13,4 +13,5 @@ spec:
   - requiredClusterSelector:
       labelSelector:
         matchLabels:
-          name: local-cluster
+          name: local-cluster-DISABLED
+
