@@ -4,7 +4,7 @@ kind: ConfigurationPolicy
 metadata:
   name: node-taint-storage
 spec:
-#  remediationAction: inform
+  remediationAction: inform
   severity: medium
   object-templates-raw: |
     {{- range $nodes := (lookup "v1" "Node" "" "" "cluster.ocs.openshift.io/openshift-storage").items }}
