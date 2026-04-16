@@ -16,6 +16,7 @@ policyDefaults:
   controls:
     - CM-6 Configuration Settings
   namespace: policies
+  RemediationAction: inform
   policySets:
     - policyset-site-example
   remediationAction: enforce
