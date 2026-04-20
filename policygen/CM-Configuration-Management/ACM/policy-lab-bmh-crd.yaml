@@ -1,4 +1,13 @@
 ---
+apiVersion: config.openshift.io/v1
+kind: ClusterVersion
+metadata:
+  name: version
+spec:
+  capabilities:
+    additionalEnabledCapabilities:
+      - baremetal
+---
 apiVersion: metal3.io/v1alpha1
 kind: Provisioning
 metadata:
