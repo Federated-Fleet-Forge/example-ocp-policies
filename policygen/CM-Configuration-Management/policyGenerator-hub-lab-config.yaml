@@ -28,19 +28,19 @@ policies:
           - spec:
               databaseStorage:
                 accessModes:
-                  - ReadWriteOnce
+                - ReadWriteOnce
                 resources:
                   requests:
-                    storage: 10Gi
+                    storage: 1Gi
               filesystemStorage:
                 accessModes:
-                  - ReadWriteOnce
+                - ReadWriteOnce
                 resources:
                   requests:
-                    storage: 20Gi
+                    storage: 2Gi
               imageStorage:
                 accessModes:
-                  - ReadWriteOnce
+                - ReadWriteOnce
                 resources:
                   requests:
                     storage: 10Gi
