@@ -22,6 +22,7 @@ policies:
 # ACM Policies - Start
   - name: policy-hub-lab-acm-config
     manifests:
+      - path: ACM/policy-lab-bmh-crd.yaml #creates and patches the BareMetalHost CRD
       - path: ACM/policy-agent-service-config.yaml
         patches:
           - spec:
