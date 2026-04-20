@@ -1,7 +1,7 @@
 apiVersion: cluster.open-cluster-management.io/v1beta1
 kind: Placement
 metadata:
-  name: placement-hub-clusters
+  name: placement-hub-production-clusters
   namespace: policies
 spec:
   tolerations:
@@ -13,5 +13,6 @@ spec:
   - requiredClusterSelector:
       labelSelector:
         matchLabels:
-          name: local-cluster-DISABLED
+          name: local-cluster
+          environment: "production"
 

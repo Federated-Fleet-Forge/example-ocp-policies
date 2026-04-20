@@ -2,7 +2,8 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: policies
 resources:
-  - cluster-hub.yaml
+  - cluster-lab-hub.yaml
+  - cluster-production-hub.yaml
   - cluster-hub-oneshot.yaml
   - all-managed-clusters.yaml
   - group-virt.yaml

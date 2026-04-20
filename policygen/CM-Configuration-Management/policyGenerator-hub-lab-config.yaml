@@ -1,0 +1,68 @@
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: PolicyGenerator
+metadata:
+  name: policy-hub-lab-config
+placementBindingDefaults:
+  name: binding-hub-lab-config
+policyDefaults:
+  categories:
+    - CM Configuration Management
+  controls:
+    - CM-6 Configuration Settings
+  namespace: policies
+  policySets:
+    - policyset-hub
+  remediationAction: enforce
+  severity: medium
+  standards:
+    - NIST SP 800-53
+policies:
+
+# ACM Policies - Start
+  - name: policy-hub-lab-acm-config
+    manifests:
+      - path: ACM/policy-agent-service-config.yaml
+    spec:
+      databaseStorage:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 10Gi
+      filesystemStorage:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 20Gi
+      imageStorage:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 10Gi
+      osImages:
+        - openshiftVersion: "4.21"
+          url: "https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/4.21/4.21.0/rhcos-4.21.0-x86_64-live-iso.x86_64.iso"
+          cpuArchitecture: "x86_64"
+          version: "9.6.20260112-0"
+# ACM Policies - End
+
+# ACS Central - Start
+# ACS Central - End
+
+# Console Policies - Start
+  - name: policy-hub-console
+    manifests:
+      - path: Console/policy-console-link-gitops-ztp.yaml
+# Console Policies - End
+
+# Logging (hub forwarder) - Start
+# Logging (hub forwarder) - End
+
+policySets:
+  - name: policyset-hub-lab 
+    description: Configuration policies for the hub cluster.
+    placement:
+      placementName: placement-hub-lab-clusters
