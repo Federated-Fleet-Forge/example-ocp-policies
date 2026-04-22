@@ -63,6 +63,21 @@ policies:
 # Logging (hub forwarder) - Start
 # Logging (hub forwarder) - End
 
+# Lab Minimise - Start
+  - name: policy-hub-lab-minimise-monitoring
+    manifests:
+      - path: Lab-Minimise/policy-minimise-monitoring.yaml
+      - path: Lab-Minimise/policy-disable-user-workload-monitoring.yaml
+#   - name: policy-hub-lab-minimise-catalogs
+#     manifests:
+#       - path: Lab-Minimise/policy-disable-catalog-sources.yaml
+#         complianceType: mustnothave
+#   - name: policy-hub-lab-minimise-acm
+#     manifests:
+#       - path: Lab-Minimise/policy-minimise-acm.yaml
+#       - path: Lab-Minimise/policy-minimise-mce-replicas.yaml
+# # Lab Minimise - End
+
 policySets:
   - name: policyset-hub-lab 
     description: Configuration policies for the hub cluster.

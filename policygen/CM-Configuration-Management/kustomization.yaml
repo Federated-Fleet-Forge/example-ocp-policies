@@ -9,6 +9,7 @@ generators:
   - ./policyGenerator-group-virt-base.yaml
   - ./policyGenerator-group-virt-config.yaml
   - ./policyGenerator-group-virt-oneshot.yaml
+  #- ./policyGenerator-group-lab.yaml
   - ./policyGenerator-site-example.yaml
 
 commonAnnotations:

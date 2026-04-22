@@ -1,0 +1,26 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  name: certified-operators
+  namespace: openshift-marketplace
+spec:
+  displayName: Certified Operators
+  sourceType: grpc
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  name: community-operators
+  namespace: openshift-marketplace
+spec:
+  displayName: Community Operators
+  sourceType: grpc
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  name: redhat-marketplace
+  namespace: openshift-marketplace
+spec:
+  displayName: Red Hat Marketplace
+  sourceType: grpc

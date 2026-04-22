@@ -1,0 +1,40 @@
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: PolicyGenerator
+metadata:
+  name: policy-group-lab-minimise
+placementBindingDefaults:
+  name: binding-group-lab-minimise
+policyDefaults:
+  categories:
+    - CM Configuration Management
+  controls:
+    - CM-6 Configuration Settings
+  namespace: policies
+  policySets:
+    - policyset-group-lab
+  remediationAction: enforce
+  severity: medium
+  standards:
+    - NIST SP 800-53
+policies:
+
+# Lab Minimise Monitoring - Start
+  - name: policy-group-lab-minimise-monitoring
+    manifests:
+      - path: Lab-Minimise/policy-minimise-monitoring.yaml
+      - path: Lab-Minimise/policy-disable-user-workload-monitoring.yaml
+# Lab Minimise Monitoring - End
+
+# Lab Minimise Catalog Sources - Start
+  - name: policy-group-lab-minimise-catalogs
+    manifests:
+      - path: Lab-Minimise/policy-disable-catalog-sources.yaml
+        complianceType: mustnothave
+# Lab Minimise Catalog Sources - End
+
+policySets:
+  - name: policyset-group-lab
+    description: Minimise resource consumption policies for lab cluster group.
+    placement:
+      placementName: placement-group-lab
