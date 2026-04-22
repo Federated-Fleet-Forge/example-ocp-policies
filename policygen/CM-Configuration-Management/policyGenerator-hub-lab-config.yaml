@@ -48,7 +48,7 @@ policies:
                 - openshiftVersion: "4.21"
                   url: "https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/4.21/4.21.0/rhcos-4.21.0-x86_64-live-iso.x86_64.iso"
                   cpuArchitecture: "x86_64"
-                  version: "9.6.20260112-0"
+                  version: "9.6.20251212-1"
 # ACM Policies - End
 
 # ACS Central - Start
