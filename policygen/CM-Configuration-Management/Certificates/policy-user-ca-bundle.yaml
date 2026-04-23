@@ -5,8 +5,22 @@ metadata:
   namespace: openshift-config
 data:
   ca-bundle.crt: |
-    <REPLACE_WITH_YOUR_CA_CERTIFICATE_BUNDLE>
-    Paste your organization's full CA certificate bundle here in PEM format.
-    This should include all CA certificates (root, issuing, intermediate)
-    that your cluster needs to trust for internal services (LDAP, proxies,
-    container registries, etc.)
+    -----BEGIN CERTIFICATE-----
+    MIIDGzCCAgOgAwIBAgIUAViTn1yjIIDDqseh52Sb0Sm3e/owDQYJKoZIhvcNAQEL
+    BQAwHTEbMBkGA1UEAwwSbGFiLXBsYWNlaG9sZGVyLWNhMB4XDTI2MDQyMzAxNTkw
+    NVoXDTM2MDQyMDAxNTkwNVowHTEbMBkGA1UEAwwSbGFiLXBsYWNlaG9sZGVyLWNh
+    MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvIx8/MA7kbrc3x22DcZG
+    Lyowkz+1fxlPCPpuL+RUZVJp6Zq82DkK7pfVROZWmDkTk071HmHYgr0BffxHODcd
+    wiBxYWj5IZkzUwqTWcwUhHHu9zuOiMivdcZzVP0qLQbKf+pjJSwgF8tTTa5HvVtS
+    axC+2dmQWnPTTIA5GyT4zQ0iYwmmIs1tXyrYCFXKAuyAzaYNsxuIsGAAfthEh8Rw
+    iD9yqVQEOPLHEi3rwnEzeQkpEaKjjZAn7lt9yaJvuKipEG6morwatR3pLcR5ry91
+    BQmI0Z5TBH4CXlBVfWh9dbNJBLJcj69QmvHRpRGJB4VXBIXUZc5kE5zloylwBEvf
+    lwIDAQABo1MwUTAdBgNVHQ4EFgQUgmobLeOCFR0WnwkgCAZ/z9uzb2gwHwYDVR0j
+    BBgwFoAUgmobLeOCFR0WnwkgCAZ/z9uzb2gwDwYDVR0TAQH/BAUwAwEB/zANBgkq
+    hkiG9w0BAQsFAAOCAQEAjXCFdiY2GRu/OjyE0MtS3an2JW27a+su2DrxnIOamkw8
+    nAF5WRKv5IrVXOyhGlpLct3jthC1jlLosUbJ7BwcqhZTik26d7GBNVXXj4nKeMw6
+    YUSKQS+YNVhnpQVwIO07o3rurIjUNzJZZ6vO4scanEbHi5rrsV5jgd5EXnV6Q5cU
+    UqOhGWyrf5yQOfPSGvfi6BnYZqydmOp/v/y3oYdzjd9PaQZpuDTbfVMPrYDotHSj
+    mDOS/SLZcGfCy7bBLxh1cGflzbf3ja/C24cSbSKhAD+ySGAJQI4NT0a2pS1SSKTS
+    TqUsvqsyqe6+hZmbbtYQWWx+GbsgfT5jJLXYxpWYgg==
+    -----END CERTIFICATE-----
