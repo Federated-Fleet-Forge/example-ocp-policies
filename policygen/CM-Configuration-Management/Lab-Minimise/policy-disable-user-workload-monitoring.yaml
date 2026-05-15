@@ -1,3 +1,5 @@
+# User-workload Prometheus: omit prometheus.volumeClaimTemplate so UWM can use
+# ephemeral storage if enabled; avoids Pending PVCs with no-provisioner StorageClasses.
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -11,11 +13,6 @@ data:
           cpu: 5m
           memory: 64Mi
       retention: 1h
-      volumeClaimTemplate:
-        spec:
-          resources:
-            requests:
-              storage: 1Gi
     thanosRuler:
       resources:
         requests:

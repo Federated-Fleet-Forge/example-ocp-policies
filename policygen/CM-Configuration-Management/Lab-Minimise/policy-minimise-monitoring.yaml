@@ -1,3 +1,6 @@
+# Platform Prometheus: omit prometheusK8s.volumeClaimTemplate so TSDB uses
+# ephemeral storage. A volumeClaimTemplate with default StorageClass
+# kubernetes.io/no-provisioner leaves prometheus-k8s-0 Pending (no PV bind).
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -16,11 +19,6 @@ data:
         requests:
           cpu: 10m
           memory: 256Mi
-      volumeClaimTemplate:
-        spec:
-          resources:
-            requests:
-              storage: 2Gi
     kubeStateMetrics:
       resources:
         requests:
