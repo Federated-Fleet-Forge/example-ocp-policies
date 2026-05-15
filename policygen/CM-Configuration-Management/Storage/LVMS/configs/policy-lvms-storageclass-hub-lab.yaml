@@ -1,0 +1,15 @@
+# Dynamic CSI class for assisted-service / MCE PVCs (default StorageClass for hub lab).
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  annotations:
+    description: LVMS thin pool (hub lab); RWO filesystem volumes
+    storageclass.kubernetes.io/is-default-class: "true"
+  name: lvms-vg1-lvms
+allowVolumeExpansion: true
+parameters:
+  csi.storage.k8s.io/fstype: xfs
+  topolvm.io/device-class: vg1-lvms
+provisioner: topolvm.io
+reclaimPolicy: Delete
+volumeBindingMode: WaitForFirstConsumer

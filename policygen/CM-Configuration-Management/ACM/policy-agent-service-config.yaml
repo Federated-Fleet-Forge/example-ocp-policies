@@ -6,6 +6,7 @@ metadata:
     argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
 spec:
   databaseStorage:
+    #storageClassName: lvms-vg1-lvms  # hub-lab PolicyGenerator patches AgentServiceConfig to set this
     #storageClassName: ocs-storagecluster-ceph-rbd  #Using Default
     accessModes:
       - ReadWriteOnce
@@ -13,6 +14,7 @@ spec:
       requests:
         storage: 10Gi
   filesystemStorage:
+    #storageClassName: lvms-vg1-lvms  # hub-lab PolicyGenerator patches AgentServiceConfig to set this
     #storageClassName: ocs-storagecluster-ceph-rbd #Using Default
     accessModes:
       - ReadWriteOnce
@@ -20,6 +22,7 @@ spec:
       requests:
         storage: 100Gi
   imageStorage:
+    #storageClassName: lvms-vg1-lvms  # hub-lab PolicyGenerator patches AgentServiceConfig to set this
     #storageClassName: ocs-storagecluster-ceph-rbd #Using Default
     accessModes:
       - ReadWriteOnce

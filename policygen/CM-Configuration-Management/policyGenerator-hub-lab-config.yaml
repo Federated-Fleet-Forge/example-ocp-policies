@@ -27,18 +27,21 @@ policies:
         patches:
           - spec:
               databaseStorage:
+                storageClassName: lvms-vg1-lvms
                 accessModes:
                 - ReadWriteOnce
                 resources:
                   requests:
                     storage: 1Gi
               filesystemStorage:
+                storageClassName: lvms-vg1-lvms
                 accessModes:
                 - ReadWriteOnce
                 resources:
                   requests:
                     storage: 2Gi
               imageStorage:
+                storageClassName: lvms-vg1-lvms
                 accessModes:
                 - ReadWriteOnce
                 resources:
@@ -62,6 +65,20 @@ policies:
 
 # Logging (hub forwarder) - Start
 # Logging (hub forwarder) - End
+
+# Lab LVMS (dynamic PVCs on second disk; retires LSO on same disk) - Start
+  - name: policy-hub-lab-lvms
+    manifests:
+      - path: Storage/LVMS/base/lvm-storage-operator-namespace.yaml
+      - path: Storage/LVMS/base/lvm-storage-operator-operator-group.yaml
+      - path: Storage/LVMS/base/lvm-storage-operator-subscription.yaml
+        patches:
+          - spec:
+              channel: stable-4.21
+      - path: Storage/LVMS/configs/policy-lvms-lvmcluster-hub-lab.yaml
+      - path: Storage/LVMS/configs/policy-lvms-storageclass-hub-lab.yaml
+      - path: Storage/LVMS/configs/policy-lvms-lvmcluster-status-hub-lab.yaml
+# Lab LVMS - End
 
 # Lab Minimise - Start
   - name: policy-hub-lab-minimise-monitoring
