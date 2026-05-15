@@ -85,6 +85,9 @@ policies:
     manifests:
       - path: Lab-Minimise/policy-minimise-monitoring.yaml
       - path: Lab-Minimise/policy-disable-user-workload-monitoring.yaml
+  - name: policy-hub-lab-hive-controllers
+    manifests:
+      - path: Lab-Minimise/policy-lab-hive-controllers.yaml
 #   - name: policy-hub-lab-minimise-catalogs
 #     manifests:
 #       - path: Lab-Minimise/policy-disable-catalog-sources.yaml
@@ -93,7 +96,7 @@ policies:
 #     manifests:
 #       - path: Lab-Minimise/policy-minimise-acm.yaml
 #       - path: Lab-Minimise/policy-minimise-mce-replicas.yaml
-# # Lab Minimise - End
+# Lab Minimise - End
 
 policySets:
   - name: policyset-hub-lab 

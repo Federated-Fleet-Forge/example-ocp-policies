@@ -1,3 +1,7 @@
+# Lab: maximum reduction of the default platform monitoring stack via
+# cluster-monitoring-config. OpenShift does not support removing platform
+# Prometheus entirely through this API; use collectionProfile: minimal,
+# short retention, and disabled optional components instead.
 # Platform Prometheus: omit prometheusK8s.volumeClaimTemplate so TSDB uses
 # ephemeral storage. A volumeClaimTemplate with default StorageClass
 # kubernetes.io/no-provisioner leaves prometheus-k8s-0 Pending (no PV bind).
@@ -14,7 +18,10 @@ data:
     telemeterClient:
       enabled: false
     prometheusK8s:
-      retention: 2h
+      collectionProfile: minimal
+      retention: 30m
+      retentionSize: 1Gi
+      enforcedBodySizeLimit: automatic
       resources:
         requests:
           cpu: 10m
@@ -24,8 +31,39 @@ data:
         requests:
           cpu: 5m
           memory: 32Mi
+    openshiftStateMetrics:
+      resources:
+        requests:
+          cpu: 5m
+          memory: 32Mi
     thanosQuerier:
       resources:
         requests:
           cpu: 5m
           memory: 64Mi
+    prometheusOperator:
+      resources:
+        requests:
+          cpu: 10m
+          memory: 64Mi
+    prometheusOperatorAdmissionWebhook:
+      resources:
+        requests:
+          cpu: 5m
+          memory: 32Mi
+    metricsServer:
+      resources:
+        requests:
+          cpu: 5m
+          memory: 40Mi
+    monitoringPlugin:
+      resources:
+        requests:
+          cpu: 5m
+          memory: 32Mi
+    nodeExporter:
+      maxProcs: 1
+      resources:
+        requests:
+          cpu: 5m
+          memory: 32Mi

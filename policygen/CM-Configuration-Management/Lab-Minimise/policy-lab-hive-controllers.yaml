@@ -1,0 +1,15 @@
+# Pin horizontally-scalable Hive shards to a single replica each on small hubs.
+# See: https://github.com/openshift/hive/blob/master/docs/using-hive.md#scaling-clustersync-and-machinepool
+apiVersion: hive.openshift.io/v1
+kind: HiveConfig
+metadata:
+  name: hive
+spec:
+  controllersConfig:
+    controllers:
+      - name: clustersync
+        config:
+          replicas: 1
+      - name: machinepool
+        config:
+          replicas: 1

@@ -1,5 +1,7 @@
 # User-workload Prometheus: omit prometheus.volumeClaimTemplate so UWM can use
 # ephemeral storage if enabled; avoids Pending PVCs with no-provisioner StorageClasses.
+# When enableUserWorkload is false (cluster-monitoring-config), this stack is not deployed;
+# these defaults apply if UWM is turned on later.
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -7,6 +9,8 @@ metadata:
   namespace: openshift-user-workload-monitoring
 data:
   config.yaml: |
+    alertmanager:
+      enabled: false
     prometheus:
       resources:
         requests:
